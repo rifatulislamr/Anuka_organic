@@ -1,706 +1,926 @@
-// 'use client'
+// "use client"
 
-// import { useState, useEffect } from 'react'
-// import { Button } from '@/components/ui/button'
+// import { useState } from "react"
+// import { Button } from "@/components/ui/button"
+// import { Input } from "@/components/ui/input"
+
 // import {
-//   Star,
-//   Zap,
-//   Shield,
-//   TrendingUp,
-//   Users,
-//   Database,
-//   BarChart3,
-//   Settings,
-//   Smartphone,
-//   Monitor,
-//   Laptop,
-//   CheckCircle,
-//   ArrowRight,
-//   Play,
-// } from 'lucide-react'
+//   Search,
+//   ShoppingCart,
+//   User,
+//   Plus,
+//   Minus,
+//   X,
+//   MapPin,
+//   Phone,
+//   Mail,
+//   Facebook,
+//   Twitter,
+//   Instagram,
+//   Youtube,
+//   ChevronDown,
+//   ChevronRight,
+// } from "lucide-react"
+// import Image from "next/image"
 
-// export default function Home() {
-//   const [isVisible, setIsVisible] = useState(false)
+// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+// import ProductCard from "./product-card"
+// import ProductDetails from "./product-details"
 
-//   useEffect(() => {
-//     setIsVisible(true)
-//   }, [])
+// interface Product {
+//   id: number
+//   name: string
+//   price: number
+//   originalPrice?: number
+//   image: string
+//   category: string
+//   rating: number
+//   inStock: boolean
+//   description?: string
+//   features?: string[]
+//   nutritionalInfo?: string
+// }
+
+// interface CartItem extends Product {
+//   quantity: number
+// }
+
+// export default function AnukaOrganicHome() {
+//   const [cartItems, setCartItems] = useState<CartItem[]>([])
+//   const [isCartOpen, setIsCartOpen] = useState(false)
+//   const [searchQuery, setSearchQuery] = useState("")
+//   const [open, setOpen] = useState(false)
+//   const [isBrowseOpen, setIsBrowseOpen] = useState(false)
+//   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
+//   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+//   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
+
+//   const products: Product[] = [
+//     // Poultry & Meat
+//     {
+//       id: 1,
+//       name: "Fresh Chicken Breast",
+//       price: 450,
+//       originalPrice: 500,
+//       image: "/fresh-chicken-breast.jpg",
+//       category: "Poultry & Meat",
+//       rating: 4.5,
+//       inStock: true,
+//       description:
+//         "Premium quality fresh chicken breast, sourced from free-range farms. Perfect for grilling, roasting, or curry preparations.",
+//       features: ["Free-range", "Antibiotic-free", "Fresh daily", "High protein"],
+//       nutritionalInfo: "Protein: 31g per 100g, Fat: 3.6g per 100g, Calories: 165 per 100g",
+//     },
+//     {
+//       id: 2,
+//       name: "Mutton Curry Cut",
+//       price: 850,
+//       image: "/mutton-curry-cut.jpg",
+//       category: "Poultry & Meat",
+//       rating: 4.8,
+//       inStock: true,
+//       description:
+//         "Tender mutton pieces cut specially for curry preparations. Sourced from grass-fed goats for the best flavor and nutrition.",
+//       features: ["Grass-fed", "Tender cuts", "Curry ready", "Rich flavor"],
+//       nutritionalInfo: "Protein: 25g per 100g, Fat: 21g per 100g, Iron: 3.3mg per 100g",
+//     },
+//     {
+//       id: 3,
+//       name: "Fish Fillet",
+//       price: 380,
+//       image: "/fresh-fish-fillet.jpg",
+//       category: "Poultry & Meat",
+//       rating: 4.3,
+//       inStock: true,
+//       description:
+//         "Fresh fish fillets, cleaned and ready to cook. Rich in omega-3 fatty acids and high-quality protein.",
+//       features: ["Omega-3 rich", "Boneless", "Fresh catch", "Ready to cook"],
+//       nutritionalInfo: "Protein: 22g per 100g, Omega-3: 1.2g per 100g, Calories: 206 per 100g",
+//     },
+//     {
+//       id: 4,
+//       name: "Prawns Large",
+//       price: 650,
+//       image: "/large-prawns-seafood.jpg",
+//       category: "Poultry & Meat",
+//       rating: 4.6,
+//       inStock: true,
+//       description:
+//         "Large, fresh prawns perfect for curries, grills, and seafood preparations. Cleaned and deveined for convenience.",
+//       features: ["Large size", "Cleaned & deveined", "Fresh catch", "Versatile cooking"],
+//       nutritionalInfo: "Protein: 24g per 100g, Fat: 0.3g per 100g, Calories: 99 per 100g",
+//     },
+
+//     // New Arrivals
+//     {
+//       id: 5,
+//       name: "Organic Quinoa",
+//       price: 320,
+//       image: "/organic-quinoa-grains.jpg",
+//       category: "New Arrivals",
+//       rating: 4.4,
+//       inStock: true,
+//       description:
+//         "Premium organic quinoa, a complete protein superfood. Perfect for salads, bowls, and healthy meal preparations.",
+//       features: ["Complete protein", "Gluten-free", "Organic certified", "Superfood"],
+//       nutritionalInfo: "Protein: 14g per 100g, Fiber: 7g per 100g, Calories: 368 per 100g",
+//     },
+//     {
+//       id: 6,
+//       name: "Almond Butter",
+//       price: 480,
+//       image: "/almond-butter-jar.png",
+//       category: "New Arrivals",
+//       rating: 4.7,
+//       inStock: true,
+//       description:
+//         "Creamy almond butter made from 100% roasted almonds. No added sugar or preservatives, just pure almond goodness.",
+//       features: ["100% almonds", "No preservatives", "Creamy texture", "Rich in vitamin E"],
+//       nutritionalInfo: "Protein: 21g per 100g, Fat: 49g per 100g, Vitamin E: 25.6mg per 100g",
+//     },
+//     {
+//       id: 7,
+//       name: "Coconut Oil",
+//       price: 280,
+//       image: "/coconut-oil-bottle.png",
+//       category: "New Arrivals",
+//       rating: 4.5,
+//       inStock: true,
+//       description:
+//         "Cold-pressed virgin coconut oil with natural coconut aroma. Perfect for cooking, baking, and skincare.",
+//       features: ["Cold-pressed", "Virgin quality", "Multi-purpose", "Natural aroma"],
+//       nutritionalInfo: "Saturated fat: 82g per 100g, Medium-chain triglycerides: 65g per 100g",
+//     },
+//     {
+//       id: 8,
+//       name: "Green Tea",
+//       price: 180,
+//       image: "/green-tea-box.png",
+//       category: "New Arrivals",
+//       rating: 4.2,
+//       inStock: true,
+//       description:
+//         "Premium green tea leaves rich in antioxidants. Sourced from high-altitude tea gardens for the finest flavor.",
+//       features: ["High antioxidants", "Premium leaves", "High-altitude grown", "Natural flavor"],
+//       nutritionalInfo: "Antioxidants: High EGCG content, Caffeine: 25mg per cup, Calories: 2 per cup",
+//     },
+
+//     // Best Selling
+//     {
+//       id: 9,
+//       name: "Basmati Rice 5kg",
+//       price: 420,
+//       image: "/basmati-rice-bag.jpg",
+//       category: "Best Selling",
+//       rating: 4.9,
+//       inStock: true,
+//       description:
+//         "Premium aged basmati rice with extra-long grains and aromatic fragrance. Perfect for biryanis and pulao.",
+//       features: ["Extra-long grains", "Aged rice", "Aromatic", "Premium quality"],
+//       nutritionalInfo: "Carbohydrates: 78g per 100g, Protein: 7g per 100g, Calories: 345 per 100g",
+//     },
+//     {
+//       id: 10,
+//       name: "Ghee Pure",
+//       price: 680,
+//       image: "/pure-ghee-jar.jpg",
+//       category: "Best Selling",
+//       rating: 4.8,
+//       inStock: true,
+//       description: "Pure cow ghee made from fresh cream using traditional methods. Rich in vitamins A, D, E, and K.",
+//       features: ["Traditional method", "Pure cow ghee", "Rich in vitamins", "Golden color"],
+//       nutritionalInfo: "Fat: 99.8g per 100g, Vitamin A: 840mcg per 100g, Calories: 900 per 100g",
+//     },
+//     {
+//       id: 11,
+//       name: "Turmeric Powder",
+//       price: 120,
+//       image: "/turmeric-powder.png",
+//       category: "Best Selling",
+//       rating: 4.6,
+//       inStock: true,
+//       description:
+//         "Pure turmeric powder with high curcumin content. Known for its anti-inflammatory and antioxidant properties.",
+//       features: ["High curcumin", "Anti-inflammatory", "Pure powder", "Natural color"],
+//       nutritionalInfo: "Curcumin: 3-5%, Iron: 41.4mg per 100g, Calories: 354 per 100g",
+//     },
+//     {
+//       id: 12,
+//       name: "Red Chili Powder",
+//       price: 150,
+//       image: "/red-chili-powder.jpg",
+//       category: "Best Selling",
+//       rating: 4.7,
+//       inStock: true,
+//       description:
+//         "Vibrant red chili powder made from premium dried chilies. Adds perfect heat and color to your dishes.",
+//       features: ["Premium chilies", "Vibrant color", "Perfect heat", "Fine powder"],
+//       nutritionalInfo: "Capsaicin: High, Vitamin C: 144mg per 100g, Calories: 282 per 100g",
+//     },
+
+//     // Daily Needs
+//     {
+//       id: 13,
+//       name: "Fresh Milk 1L",
+//       price: 65,
+//       image: "/fresh-milk-bottle.jpg",
+//       category: "Daily Needs",
+//       rating: 4.3,
+//       inStock: true,
+//       description:
+//         "Fresh cow milk from local dairy farms. Rich in calcium, protein, and essential vitamins for daily nutrition.",
+//       features: ["Farm fresh", "Rich in calcium", "Daily nutrition", "Local sourced"],
+//       nutritionalInfo: "Protein: 3.4g per 100ml, Calcium: 113mg per 100ml, Calories: 42 per 100ml",
+//     },
+//     {
+//       id: 14,
+//       name: "Brown Bread",
+//       price: 45,
+//       image: "/brown-bread-loaf.jpg",
+//       category: "Daily Needs",
+//       rating: 4.1,
+//       inStock: true,
+//       description:
+//         "Wholesome brown bread made with whole wheat flour. High in fiber and perfect for healthy breakfast.",
+//       features: ["Whole wheat", "High fiber", "Healthy choice", "Fresh baked"],
+//       nutritionalInfo: "Fiber: 6g per 100g, Protein: 13g per 100g, Calories: 247 per 100g",
+//     },
+//     {
+//       id: 15,
+//       name: "Farm Eggs 12pcs",
+//       price: 85,
+//       image: "/farm-fresh-eggs.png",
+//       category: "Daily Needs",
+//       rating: 4.4,
+//       inStock: true,
+//       description:
+//         "Fresh farm eggs from free-range hens. Rich in protein and essential amino acids for daily nutrition.",
+//       features: ["Free-range hens", "Fresh daily", "High protein", "Natural feed"],
+//       nutritionalInfo: "Protein: 13g per egg, Fat: 11g per egg, Calories: 155 per egg",
+//     },
+//     {
+//       id: 16,
+//       name: "Yogurt 500g",
+//       price: 55,
+//       image: "/fresh-yogurt.jpg",
+//       category: "Daily Needs",
+//       rating: 4.2,
+//       inStock: true,
+//       description: "Fresh homemade-style yogurt with live cultures. Perfect for digestion and as a healthy snack.",
+//       features: ["Live cultures", "Homemade style", "Digestive health", "Creamy texture"],
+//       nutritionalInfo: "Protein: 10g per 100g, Probiotics: Live cultures, Calories: 59 per 100g",
+//     },
+
+//     // Signature Series
+//     {
+//       id: 17,
+//       name: "Anuka Special Masala",
+//       price: 280,
+//       image: "/special-masala-blend.jpg",
+//       category: "Signature Series",
+//       rating: 4.9,
+//       inStock: true,
+//       description:
+//         "Our signature spice blend with 15 carefully selected spices. Perfect for authentic Indian curries and dishes.",
+//       features: ["15 spice blend", "Signature recipe", "Authentic flavor", "Premium quality"],
+//       nutritionalInfo: "Mixed spices with balanced flavor profile, Rich in antioxidants",
+//     },
+//     {
+//       id: 18,
+//       name: "Premium Tea Blend",
+//       price: 350,
+//       image: "/premium-tea-blend.jpg",
+//       category: "Signature Series",
+//       rating: 4.8,
+//       inStock: true,
+//       description:
+//         "Exclusive tea blend combining the finest tea leaves from different regions. Rich aroma and perfect strength.",
+//       features: ["Multi-region blend", "Rich aroma", "Perfect strength", "Exclusive recipe"],
+//       nutritionalInfo: "Antioxidants: High, Caffeine: 40mg per cup, Natural flavor compounds",
+//     },
+//     {
+//       id: 19,
+//       name: "Artisan Honey",
+//       price: 420,
+//       image: "/artisan-honey-jar.jpg",
+//       category: "Signature Series",
+//       rating: 4.7,
+//       inStock: true,
+//       description:
+//         "Raw, unprocessed honey from wildflower meadows. Rich in enzymes, antioxidants, and natural sweetness.",
+//       features: ["Raw & unprocessed", "Wildflower source", "Rich in enzymes", "Natural sweetness"],
+//       nutritionalInfo: "Natural sugars: 82g per 100g, Antioxidants: High, Calories: 304 per 100g",
+//     },
+//     {
+//       id: 20,
+//       name: "Organic Jaggery",
+//       price: 180,
+//       image: "/organic-jaggery.jpg",
+//       category: "Signature Series",
+//       rating: 4.6,
+//       inStock: true,
+//       description: "Pure organic jaggery made from sugarcane juice. Natural sweetener rich in minerals and iron.",
+//       features: ["Organic certified", "Sugarcane source", "Rich in minerals", "Natural sweetener"],
+//       nutritionalInfo: "Iron: 11mg per 100g, Minerals: Calcium, Magnesium, Calories: 383 per 100g",
+//     },
+
+//     // Pickles & Chutney
+//     {
+//       id: 21,
+//       name: "Mango Pickle",
+//       price: 220,
+//       image: "/mango-pickle-jar.png",
+//       category: "Pickles & Chutney",
+//       rating: 4.5,
+//       inStock: true,
+//       description:
+//         "Traditional mango pickle made with raw mangoes and authentic spices. Tangy and spicy flavor that enhances any meal.",
+//       features: ["Traditional recipe", "Raw mangoes", "Authentic spices", "Tangy & spicy"],
+//       nutritionalInfo: "Vitamin C: High, Probiotics: Fermented, Spices: Traditional blend",
+//     },
+//     {
+//       id: 22,
+//       name: "Mint Chutney",
+//       price: 180,
+//       image: "/mint-chutney.jpg",
+//       category: "Pickles & Chutney",
+//       rating: 4.3,
+//       inStock: true,
+//       description:
+//         "Fresh mint chutney with coriander and green chilies. Perfect accompaniment for snacks and main dishes.",
+//       features: ["Fresh mint", "Green chilies", "Perfect accompaniment", "Fresh flavor"],
+//       nutritionalInfo: "Vitamin A: High, Antioxidants: Natural, Fresh herbs: Mint, coriander",
+//     },
+//     {
+//       id: 23,
+//       name: "Garlic Pickle",
+//       price: 200,
+//       image: "/garlic-pickle.jpg",
+//       category: "Pickles & Chutney",
+//       rating: 4.4,
+//       inStock: true,
+//       description: "Spicy garlic pickle with traditional spices. Known for its health benefits and bold flavor.",
+//       features: ["Spicy flavor", "Health benefits", "Traditional spices", "Bold taste"],
+//       nutritionalInfo: "Allicin: Natural compound, Antioxidants: High, Traditional spice blend",
+//     },
+//     {
+//       id: 24,
+//       name: "Tamarind Chutney",
+//       price: 160,
+//       image: "/tamarind-chutney.jpg",
+//       category: "Pickles & Chutney",
+//       rating: 4.2,
+//       inStock: true,
+//       description:
+//         "Sweet and tangy tamarind chutney perfect for chaats and snacks. Made with pure tamarind and jaggery.",
+//       features: ["Sweet & tangy", "Pure tamarind", "Jaggery sweetened", "Chaat perfect"],
+//       nutritionalInfo: "Vitamin C: High, Natural acids: Tartaric acid, Antioxidants: Natural",
+//     },
+//   ]
+
+//   const categories = [
+//     "Poultry & Meat",
+//     "New Arrivals",
+//     "Best Selling",
+//     "Daily Needs",
+//     "Signature Series",
+//     "Pickles & Chutney",
+//   ]
+
+//   const categorySubmenus = {
+//     "Poultry & Meat": [
+//       { name: "Fresh Chicken", count: 8 },
+//       { name: "Mutton & Lamb", count: 5 },
+//       { name: "Fish & Seafood", count: 12 },
+//       { name: "Eggs", count: 3 },
+//       { name: "Processed Meat", count: 6 },
+//     ],
+//     "New Arrivals": [
+//       { name: "Organic Grains", count: 7 },
+//       { name: "Superfoods", count: 9 },
+//       { name: "Health Drinks", count: 4 },
+//       { name: "Snacks", count: 11 },
+//       { name: "Seasonal Items", count: 6 },
+//     ],
+//     "Best Selling": [
+//       { name: "Rice & Grains", count: 15 },
+//       { name: "Cooking Oils", count: 8 },
+//       { name: "Spices", count: 20 },
+//       { name: "Dairy Products", count: 10 },
+//       { name: "Pulses & Lentils", count: 12 },
+//     ],
+//     "Daily Needs": [
+//       { name: "Milk & Dairy", count: 8 },
+//       { name: "Bread & Bakery", count: 6 },
+//       { name: "Beverages", count: 12 },
+//       { name: "Personal Care", count: 15 },
+//       { name: "Household Items", count: 18 },
+//     ],
+//     "Signature Series": [
+//       { name: "Premium Spices", count: 12 },
+//       { name: "Artisan Products", count: 8 },
+//       { name: "Gift Hampers", count: 5 },
+//       { name: "Limited Edition", count: 3 },
+//       { name: "Chef's Special", count: 7 },
+//     ],
+//     "Pickles & Chutney": [
+//       { name: "Mango Pickles", count: 6 },
+//       { name: "Mixed Pickles", count: 8 },
+//       { name: "Chutneys", count: 10 },
+//       { name: "Preserves", count: 5 },
+//       { name: "Regional Specials", count: 12 },
+//     ],
+//   }
+
+//   const filteredProducts = products.filter(
+//     (product) =>
+//       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+//       product.category.toLowerCase().includes(searchQuery.toLowerCase()),
+//   )
+
+//   const addToCart = (product: Product) => {
+//     setCartItems((prev) => {
+//       const existingItem = prev.find((item) => item.id === product.id)
+//       if (existingItem) {
+//         return prev.map((item) => (item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item))
+//       }
+//       return [...prev, { ...product, quantity: 1 }]
+//     })
+//   }
+
+//   const updateQuantity = (id: number, quantity: number) => {
+//     if (quantity === 0) {
+//       setCartItems((prev) => prev.filter((item) => item.id !== id))
+//     } else {
+//       setCartItems((prev) => prev.map((item) => (item.id === id ? { ...item, quantity } : item)))
+//     }
+//   }
+
+//   const getTotalPrice = () => {
+//     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
+//   }
+
+//   const getTotalItems = () => {
+//     return cartItems.reduce((total, item) => total + item.quantity, 0)
+//   }
+
+//   const openProductModal = (product: Product) => {
+//     setSelectedProduct(product)
+//     setIsProductModalOpen(true)
+//   }
+
+//   const closeProductModal = () => {
+//     setIsProductModalOpen(false)
+//     setSelectedProduct(null)
+//   }
 
 //   return (
-//     <div className="relative overflow-hidden">
-//       {/* Animated Background Elements */}
-//       <div className="fixed inset-0 pointer-events-none">
-//         <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 rounded-full blur-3xl animate-pulse"></div>
-//         <div className="absolute top-1/2 right-10 w-96 h-96 bg-gradient-to-r from-yellow-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-//         <div className="absolute bottom-20 left-1/2 w-80 h-80 bg-gradient-to-r from-green-400/20 to-teal-400/20 rounded-full blur-3xl animate-pulse delay-2000"></div>
-//       </div>
-
-//       {/* Hero Section */}
-//       <section
-//         id="home"
-//         className="min-h-screen relative pt-24 px-4 bg-gradient-to-br from-gray-50 via-white to-gray-50"
-//       >
-//         <div className="max-w-7xl mx-auto py-20">
-//           <div className="grid lg:grid-cols-2 gap-12 items-center">
-//             {/* Left Content */}
-//             <div
-//               className={`space-y-8 ${isVisible ? 'animate-in slide-in-from-left duration-1000' : 'opacity-0'}`}
-//             >
-//               <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-full text-sm font-medium text-gray-700 border border-yellow-200">
-//                 <Zap className="w-4 h-4 mr-2 text-yellow-600" />
-//                 #1 Asset Management Platform
+//     <div className="min-h-screen bg-gray-50">
+//       {/* Header */}
+//       <header className="bg-white shadow-sm border-b sticky top-0 z-40">
+//         <div className="max-w-7xl mx-auto px-4">
+//           <div className="flex items-center justify-between h-16">
+//             {/* Logo and Browse Categories */}
+//             <div className="flex items-center space-x-6">
+//               {/* Logo */}
+//               <div className="flex items-center space-x-3">
+//                 <Image
+//                   height={48}
+//                   width={48}
+//                   src="/anuka-organic-logo.jpg"
+//                   alt="Anuka Organic Logo"
+//                   className="w-12 h-12 object-contain"
+//                 />
+//                 <div className="flex flex-col">
+//                   <span className="text-2xl font-bold text-green-700">Anuka</span>
+//                   <span className="text-sm font-medium text-green-600 -mt-1">ORGANIC</span>
+//                 </div>
 //               </div>
 
-//               <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-//                 <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
-//                   Asset
-//                 </span>
-//                 <br />
-//                 <span className="bg-gradient-to-r from-yellow-500 via-orange-500 to-yellow-600 bg-clip-text text-transparent">
-//                   Management
-//                 </span>
-//                 <br />
-//                 <span className="text-gray-900">Redefined</span>
-//               </h1>
+//               <div className="relative">
+//                 <button
+//                   className="flex items-center space-x-1 text-gray-700 hover:text-green-600 font-medium transition-colors px-3 py-2"
+//                   onMouseEnter={() => setIsBrowseOpen(true)}
+//                 >
+//                   <span className="bg-green-300 p-2 rounded-full">Browse Categories</span>
+//                   <ChevronDown className="w-4 h-4" />
+//                 </button>
 
-//               <p className="text-xl text-gray-600 leading-relaxed max-w-lg">
-//                 Transform your enterprise with intelligent asset tracking,
-//                 predictive maintenance, and real-time analytics. Experience the
-//                 future of ERP today.
+//                 {/* Main Categories Dropdown */}
+//                 {isBrowseOpen && (
+//                   <div
+//                     className="absolute top-full left-0 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+//                     onMouseLeave={() => {
+//                       setIsBrowseOpen(false)
+//                       setHoveredCategory(null)
+//                     }}
+//                   >
+//                     {categories.map((category) => (
+//                       <div key={category} className="relative" onMouseEnter={() => setHoveredCategory(category)}>
+//                         <div className="flex items-center justify-between px-4 py-3 hover:bg-green-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0">
+//                           <span className="text-gray-700 hover:text-green-600 font-medium">{category}</span>
+//                           <ChevronRight className="w-4 h-4 text-gray-400" />
+//                         </div>
+
+//                         {/* Subcategories Side Menu */}
+//                         {hoveredCategory === category && (
+//                           <div className="absolute left-full top-0 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 ml-1">
+//                             <div className="p-2">
+//                               <h4 className="text-sm font-semibold text-gray-800 px-3 py-2 border-b border-gray-100 mb-2">
+//                                 {category}
+//                               </h4>
+//                               {categorySubmenus[category as keyof typeof categorySubmenus]?.map((subcategory) => (
+//                                 <div
+//                                   key={subcategory.name}
+//                                   className="flex items-center justify-between px-3 py-2 hover:bg-green-50 cursor-pointer transition-colors rounded"
+//                                 >
+//                                   <span className="text-gray-600 hover:text-green-600 text-sm">{subcategory.name}</span>
+//                                   <span className="text-xs text-gray-400">({subcategory.count})</span>
+//                                 </div>
+//                               ))}
+//                             </div>
+//                           </div>
+//                         )}
+//                       </div>
+//                     ))}
+//                   </div>
+//                 )}
+//               </div>
+//             </div>
+
+//             {/* Search Bar */}
+//             <div className="flex-1 max-w-2xl mx-8">
+//               <div className="relative">
+//                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+//                 <Input
+//                   type="text"
+//                   placeholder="Search for organic products..."
+//                   value={searchQuery}
+//                   onChange={(e) => setSearchQuery(e.target.value)}
+//                   className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//                 />
+//                 {searchQuery && (
+//                   <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-lg shadow-lg mt-1 p-2 text-sm text-gray-600">
+//                     Found {filteredProducts.length} products matching {searchQuery}
+//                   </div>
+//                 )}
+//               </div>
+//             </div>
+
+//             {/* Right Actions */}
+//             <div className="flex items-center space-x-4">
+//               {/* User Dropdown (hover) */}
+//               <DropdownMenu open={open} onOpenChange={setOpen}>
+//                 <DropdownMenuTrigger asChild>
+//                   <Button
+//                     variant="ghost"
+//                     size="icon"
+//                     className="text-gray-600 hover:text-green-600"
+//                     onMouseEnter={() => setOpen(true)}
+//                     onMouseLeave={() => setOpen(false)}
+//                   >
+//                     <User className="w-5 h-5" />
+//                   </Button>
+//                 </DropdownMenuTrigger>
+//                 <DropdownMenuContent
+//                   className="w-32"
+//                   onMouseEnter={() => setOpen(true)}
+//                   onMouseLeave={() => setOpen(false)}
+//                 >
+//                   <DropdownMenuItem onClick={() => console.log("Login clicked")}>Log In</DropdownMenuItem>
+//                   <DropdownMenuItem onClick={() => console.log("Register clicked")}>Register</DropdownMenuItem>
+//                 </DropdownMenuContent>
+//               </DropdownMenu>
+
+//               {/* Cart Button */}
+//               <Button
+//                 variant="ghost"
+//                 size="icon"
+//                 className="relative text-gray-600 hover:text-green-600"
+//                 onClick={() => setIsCartOpen(true)}
+//               >
+//                 <ShoppingCart className="w-5 h-5" />
+//                 {getTotalItems() > 0 && (
+//                   <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+//                     {getTotalItems()}
+//                   </span>
+//                 )}
+//               </Button>
+//             </div>
+//           </div>
+//         </div>
+//       </header>
+
+//       {/* Navigation */}
+//       <nav className="bg-white border-b border-gray-200">
+//         <div className="max-w-7xl mx-auto px-4">
+//           <div className="flex items-center space-x-8 h-12 overflow-x-auto">
+//             {categories.map((category) => (
+//               <a
+//                 key={category}
+//                 href={`#${category.toLowerCase().replace(/\s+/g, "-")}`}
+//                 className="text-gray-700 hover:text-green-600 whitespace-nowrap text-sm font-medium transition-colors"
+//               >
+//                 {category}
+//               </a>
+//             ))}
+//           </div>
+//         </div>
+//       </nav>
+
+//       {/* Hero Banner */}
+//       <section className="bg-gradient-to-r from-green-50 to-green-100 py-12">
+//         <div className="max-w-7xl mx-auto px-4">
+//           <div className="text-center">
+//             <h1 className="text-4xl md:text-6xl font-bold text-green-800 mb-4">100% Natural & Organic</h1>
+//             <p className="text-xl text-green-700 mb-8 max-w-2xl mx-auto">
+//               Discover the finest selection of organic spices, natural products, and healthy foods delivered fresh to
+//               your doorstep.
+//             </p>
+//             <Button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg">Shop Organic Now</Button>
+//           </div>
+//         </div>
+//       </section>
+
+//       {/* Search Results */}
+//       {searchQuery && (
+//         <section className="container mx-auto px-4 py-8">
+//           <h2 className="text-2xl font-bold text-gray-900 mb-6">
+//             Search Results for {searchQuery} ({filteredProducts.length} items)
+//           </h2>
+//           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+//             {filteredProducts.map((product) => (
+//               <ProductCard
+//                 key={product.id}
+//                 product={product}
+//                 onProductClick={openProductModal}
+//                 onAddToCart={addToCart}
+//               />
+//             ))}
+//           </div>
+//         </section>
+//       )}
+
+//       {/* Product Categories */}
+//       {!searchQuery && (
+//         <main className="container mx-auto px-4 py-8">
+//           {categories.map((category) => (
+//             <section key={category} id={category.toLowerCase().replace(/\s+/g, "-")} className="mb-12">
+//               <div className="flex items-center justify-between mb-6">
+//                 <h2 className="text-2xl font-bold text-gray-900">{category}</h2>
+//                 <Button
+//                   variant="outline"
+//                   className="text-green-600 border-green-600 hover:bg-green-600 hover:text-white bg-transparent"
+//                 >
+//                   View All
+//                 </Button>
+//               </div>
+
+//               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+//                 {products
+//                   .filter((product) => product.category === category)
+//                   .map((product) => (
+//                     <ProductCard
+//                       key={product.id}
+//                       product={product}
+//                       onProductClick={openProductModal}
+//                       onAddToCart={addToCart}
+//                     />
+//                   ))}
+//               </div>
+//             </section>
+//           ))}
+//         </main>
+//       )}
+
+//       {/* Product Details Modal */}
+//       {selectedProduct && (
+//         <ProductDetails
+//           product={selectedProduct}
+//           isOpen={isProductModalOpen}
+//           onClose={closeProductModal}
+//           onAddToCart={addToCart}
+//         />
+//       )}
+
+//       {/* Cart Sidebar */}
+//       {isCartOpen && (
+//         <div className="fixed inset-0 z-50 overflow-hidden">
+//           <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsCartOpen(false)} />
+//           <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl">
+//             <div className="flex items-center justify-between p-4 border-b border-gray-200">
+//               <h2 className="text-lg font-semibold">Shopping Cart</h2>
+//               <Button variant="ghost" size="icon" onClick={() => setIsCartOpen(false)}>
+//                 <X className="w-5 h-5" />
+//               </Button>
+//             </div>
+
+//             <div className="flex-1 overflow-y-auto p-4">
+//               {cartItems.length === 0 ? (
+//                 <div className="text-center py-8">
+//                   <ShoppingCart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+//                   <p className="text-gray-500">Your cart is empty</p>
+//                 </div>
+//               ) : (
+//                 <div className="space-y-4">
+//                   {cartItems.map((item) => (
+//                     <div key={item.id} className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg">
+//                       <Image
+//                         height={64}
+//                         width={64}
+//                         src={item.image || "/placeholder.svg"}
+//                         alt={item.name}
+//                         className="w-16 h-16 object-cover rounded"
+//                       />
+//                       <div className="flex-1">
+//                         <h3 className="font-medium text-sm">{item.name}</h3>
+//                         <p className="text-green-600 font-semibold">₹{item.price}</p>
+//                       </div>
+//                       <div className="flex items-center space-x-2">
+//                         <Button
+//                           variant="outline"
+//                           size="icon"
+//                           className="w-8 h-8 bg-transparent"
+//                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
+//                         >
+//                           <Minus className="w-3 h-3" />
+//                         </Button>
+//                         <span className="w-8 text-center">{item.quantity}</span>
+//                         <Button
+//                           variant="outline"
+//                           size="icon"
+//                           className="w-8 h-8 bg-transparent"
+//                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
+//                         >
+//                           <Plus className="w-3 h-3" />
+//                         </Button>
+//                       </div>
+//                     </div>
+//                   ))}
+//                 </div>
+//               )}
+//             </div>
+
+//             {cartItems.length > 0 && (
+//               <div className="border-t border-gray-200 p-4">
+//                 <div className="flex items-center justify-between mb-4">
+//                   <span className="text-lg font-semibold">Total:</span>
+//                   <span className="text-lg font-bold text-green-600">₹{getTotalPrice()}</span>
+//                 </div>
+//                 <Button className="w-full bg-green-600 hover:bg-green-700 text-white">Proceed to Checkout</Button>
+//               </div>
+//             )}
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Footer */}
+//       <footer className="bg-white border-t border-gray-200 mt-16">
+//         <div className="max-w-7xl mx-auto px-4 py-12">
+//           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+//             <div>
+//               {/* Logo */}
+//               <div className="flex items-center space-x-3 mb-4">
+//                 <Image
+//                   height={40}
+//                   width={40}
+//                   src="/anuka-organic-logo.jpg"
+//                   alt="Anuka Organic Logo"
+//                   className="w-10 h-10 object-contain"
+//                 />
+//                 <div className="flex flex-col">
+//                   <span className="text-xl font-bold text-green-700">Anuka</span>
+//                   <span className="text-xs font-medium text-green-600 -mt-1">ORGANIC</span>
+//                 </div>
+//               </div>
+//               <p className="text-gray-600 text-sm mb-4">
+//                 Your trusted partner for 100% natural and organic products delivered fresh to your doorstep.
 //               </p>
-
-//               <div className="flex flex-col sm:flex-row gap-4">
-//                 <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white px-8 py-6 text-lg rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 group">
-//                   Start Free Trial
-//                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+//               <div className="flex space-x-3">
+//                 <Button
+//                   variant="outline"
+//                   size="icon"
+//                   className="w-8 h-8 text-gray-600 hover:text-green-600 bg-transparent"
+//                 >
+//                   <Facebook className="w-4 h-4" />
 //                 </Button>
 //                 <Button
 //                   variant="outline"
-//                   className="border-2 border-gray-300 hover:border-gray-400 px-8 py-6 text-lg rounded-2xl hover:bg-gray-50 transition-all duration-300 group"
+//                   size="icon"
+//                   className="w-8 h-8 text-gray-600 hover:text-green-600 bg-transparent"
 //                 >
-//                   <Play className="mr-2 w-5 h-5" />
-//                   Watch Demo
+//                   <Twitter className="w-4 h-4" />
+//                 </Button>
+//                 <Button
+//                   variant="outline"
+//                   size="icon"
+//                   className="w-8 h-8 text-gray-600 hover:text-green-600 bg-transparent"
+//                 >
+//                   <Instagram className="w-4 h-4" />
+//                 </Button>
+//                 <Button
+//                   variant="outline"
+//                   size="icon"
+//                   className="w-8 h-8 text-gray-600 hover:text-green-600 bg-transparent"
+//                 >
+//                   <Youtube className="w-4 h-4" />
 //                 </Button>
 //               </div>
-
-//               <div className="flex items-center space-x-8 pt-4">
-//                 <div className="text-center">
-//                   <div className="text-3xl font-bold text-gray-900">10K+</div>
-//                   <div className="text-sm text-gray-600">Active Users</div>
-//                 </div>
-//                 <div className="text-center">
-//                   <div className="text-3xl font-bold text-gray-900">99.9%</div>
-//                   <div className="text-sm text-gray-600">Uptime</div>
-//                 </div>
-//                 <div className="text-center">
-//                   <div className="text-3xl font-bold text-gray-900">50M+</div>
-//                   <div className="text-sm text-gray-600">Assets Tracked</div>
-//                 </div>
-//               </div>
 //             </div>
 
-//             {/* Right Content - Dashboard Preview */}
-//             <div
-//               className={`relative ${isVisible ? 'animate-in slide-in-from-right duration-1000' : 'opacity-0'}`}
-//             >
-//               <div className="relative">
-//                 {/* Floating Cards */}
-//                 <div className="absolute -top-8 -left-8 bg-white rounded-2xl shadow-2xl p-6 border border-gray-100 animate-bounce z-10">
-//                   <div className="flex items-center space-x-3">
-//                     <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl flex items-center justify-center">
-//                       <TrendingUp className="w-6 h-6 text-white" />
-//                     </div>
-//                     <div>
-//                       <div className="text-sm text-gray-600">Asset Value</div>
-//                       <div className="text-xl font-bold text-gray-900">
-//                         $2.4M
-//                       </div>
-//                     </div>
-//                   </div>
-//                 </div>
-
-//                 <div className="absolute -bottom-8 -right-8 bg-white rounded-2xl shadow-2xl p-6 border border-gray-100 animate-bounce delay-1000 z-10">
-//                   <div className="flex items-center space-x-3">
-//                     <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-cyan-500 rounded-xl flex items-center justify-center">
-//                       <BarChart3 className="w-6 h-6 text-white" />
-//                     </div>
-//                     <div>
-//                       <div className="text-sm text-gray-600">Efficiency</div>
-//                       <div className="text-xl font-bold text-gray-900">
-//                         +127%
-//                       </div>
-//                     </div>
-//                   </div>
-//                 </div>
-
-//                 {/* Main Dashboard */}
-//                 <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 border border-gray-200">
-//                   <div className="space-y-6">
-//                     <div className="flex items-center justify-between">
-//                       <h3 className="text-lg font-semibold text-gray-900">
-//                         Asset Overview
-//                       </h3>
-//                       <div className="flex space-x-2">
-//                         <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-//                         <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-//                         <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-//                       </div>
-//                     </div>
-
-//                     {/* Chart Placeholder */}
-//                     <div className="h-40 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 rounded-2xl flex items-end justify-around p-4">
-//                       {[40, 70, 30, 90, 60, 80, 50].map((height, i) => (
-//                         <div
-//                           key={i}
-//                           className="bg-gradient-to-t from-yellow-500 to-orange-400 rounded-t-lg animate-pulse"
-//                           style={{
-//                             height: `${height}%`,
-//                             width: '12%',
-//                             animationDelay: `${i * 200}ms`,
-//                           }}
-//                         ></div>
-//                       ))}
-//                     </div>
-
-//                     {/* Metrics */}
-//                     <div className="grid grid-cols-2 gap-4">
-//                       <div className="bg-gray-50 rounded-xl p-4">
-//                         <div className="text-2xl font-bold text-gray-900">
-//                           1,247
-//                         </div>
-//                         <div className="text-sm text-gray-600">
-//                           Active Assets
-//                         </div>
-//                       </div>
-//                       <div className="bg-gray-50 rounded-xl p-4">
-//                         <div className="text-2xl font-bold text-gray-900">
-//                           98.2%
-//                         </div>
-//                         <div className="text-sm text-gray-600">
-//                           Availability
-//                         </div>
-//                       </div>
-//                     </div>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* Features Section */}
-//       <section
-//         id="features"
-//         className="py-24 px-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white"
-//       >
-//         <div className="max-w-7xl mx-auto">
-//           <div className="text-center mb-16">
-//             <h2 className="text-4xl md:text-6xl font-bold mb-6">
-//               <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-//                 Powerful Features
-//               </span>
-//             </h2>
-//             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-//               Everything you need to manage your enterprise assets efficiently
-//               and effectively
-//             </p>
-//           </div>
-
-//           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-//             {[
-//               {
-//                 icon: Database,
-//                 title: 'Real-time Tracking',
-//                 desc: 'Monitor all your assets in real-time with IoT integration and GPS tracking',
-//               },
-//               {
-//                 icon: BarChart3,
-//                 title: 'Advanced Analytics',
-//                 desc: 'Get deep insights with AI-powered analytics and predictive maintenance',
-//               },
-//               {
-//                 icon: Shield,
-//                 title: 'Enterprise Security',
-//                 desc: 'Bank-grade security with end-to-end encryption and compliance',
-//               },
-//               {
-//                 icon: Settings,
-//                 title: 'Automated Workflows',
-//                 desc: 'Streamline operations with intelligent automation and custom workflows',
-//               },
-//               {
-//                 icon: Users,
-//                 title: 'Team Collaboration',
-//                 desc: 'Enable seamless collaboration across departments and locations',
-//               },
-//               {
-//                 icon: TrendingUp,
-//                 title: 'Performance Optimization',
-//                 desc: 'Maximize asset utilization with intelligent recommendations',
-//               },
-//             ].map((feature, i) => (
-//               <div
-//                 key={i}
-//                 className="group bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-yellow-400/50 transition-all duration-500 hover:transform hover:scale-105"
-//               >
-//                 <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-//                   <feature.icon className="w-8 h-8 text-gray-900" />
-//                 </div>
-//                 <h3 className="text-xl font-bold mb-3 text-white">
-//                   {feature.title}
-//                 </h3>
-//                 <p className="text-gray-300 leading-relaxed">{feature.desc}</p>
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* Apps Section */}
-//       <section
-//         id="apps"
-//         className="py-24 px-4 bg-gradient-to-br from-gray-50 to-white"
-//       >
-//         <div className="max-w-7xl mx-auto">
-//           <div className="text-center mb-16">
-//             <h2 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
-//               Access{' '}
-//               <span className="bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
-//                 Anywhere
-//               </span>
-//             </h2>
-//             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-//               Manage your assets from any device, anywhere in the world
-//             </p>
-//           </div>
-
-//           <div className="grid md:grid-cols-3 gap-8">
-//             {[
-//               {
-//                 icon: Smartphone,
-//                 title: 'Mobile App',
-//                 desc: 'iOS & Android apps with offline capabilities',
-//                 color: 'from-yellow-500 to-cyan-500',
-//               },
-//               {
-//                 icon: Monitor,
-//                 title: 'Web Platform',
-//                 desc: 'Full-featured web application accessible from any browser',
-//                 color: 'from-purple-500 to-pink-500',
-//               },
-//               {
-//                 icon: Laptop,
-//                 title: 'Desktop Suite',
-//                 desc: 'Native desktop applications for Windows and macOS',
-//                 color: 'from-green-500 to-emerald-500',
-//               },
-//             ].map((app, i) => (
-//               <div
-//                 key={i}
-//                 className="group text-center transform hover:scale-105 transition-all duration-500"
-//               >
-//                 <div
-//                   className={`w-24 h-24 bg-gradient-to-r ${app.color} rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl group-hover:shadow-3xl group-hover:rotate-3 transition-all duration-500`}
-//                 >
-//                   <app.icon className="w-12 h-12 text-white" />
-//                 </div>
-//                 <h3 className="text-2xl font-bold mb-3 text-gray-900">
-//                   {app.title}
-//                 </h3>
-//                 <p className="text-gray-600 leading-relaxed">{app.desc}</p>
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* Benefits Section */}
-//       <section
-//         id="benefits"
-//         className="py-24 px-4 bg-gradient-to-br from-yellow-50 via-orange-50 to-yellow-50"
-//       >
-//         <div className="max-w-7xl mx-auto">
-//           <div className="grid lg:grid-cols-2 gap-16 items-center">
 //             <div>
-//               <h2 className="text-4xl md:text-6xl font-bold mb-8 text-gray-900">
-//                 Why Choose{' '}
-//                 <span className="bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
-//                   Asset Tiger?
-//                 </span>
-//               </h2>
-
-//               <div className="space-y-6">
-//                 {[
-//                   {
-//                     title: 'Reduce Costs by 40%',
-//                     desc: 'Optimize asset utilization and prevent unnecessary purchases',
-//                   },
-//                   {
-//                     title: 'Improve Efficiency by 60%',
-//                     desc: 'Automate workflows and eliminate manual processes',
-//                   },
-//                   {
-//                     title: 'Increase Compliance by 95%',
-//                     desc: 'Stay compliant with automated reporting and audits',
-//                   },
-//                   {
-//                     title: 'Enhance Visibility by 100%',
-//                     desc: 'Get complete visibility into your asset lifecycle',
-//                   },
-//                 ].map((benefit, i) => (
-//                   <div key={i} className="flex items-start space-x-4 group">
-//                     <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-//                       <CheckCircle className="w-5 h-5 text-white" />
-//                     </div>
-//                     <div>
-//                       <h3 className="text-xl font-bold text-gray-900 mb-2">
-//                         {benefit.title}
-//                       </h3>
-//                       <p className="text-gray-600">{benefit.desc}</p>
-//                     </div>
-//                   </div>
-//                 ))}
-//               </div>
+//               <h3 className="font-semibold text-gray-900 mb-4">Quick Links</h3>
+//               <ul className="space-y-2 text-sm text-gray-600">
+//                 <li>
+//                   <a href="#" className="hover:text-green-600">
+//                     About Us
+//                   </a>
+//                 </li>
+//                 <li>
+//                   <a href="#" className="hover:text-green-600">
+//                     Contact
+//                   </a>
+//                 </li>
+//                 <li>
+//                   <a href="#" className="hover:text-green-600">
+//                     Privacy Policy
+//                   </a>
+//                 </li>
+//                 <li>
+//                   <a href="#" className="hover:text-green-600">
+//                     Terms of Service
+//                   </a>
+//                 </li>
+//               </ul>
 //             </div>
 
-//             <div className="relative">
-//               <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
-//                 <div className="text-center space-y-6">
-//                   <div className="w-20 h-20 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center mx-auto">
-//                     <TrendingUp className="w-10 h-10 text-white" />
-//                   </div>
-//                   <h3 className="text-2xl font-bold text-gray-900">
-//                     ROI Calculator
-//                   </h3>
-//                   <div className="bg-gray-50 rounded-2xl p-6">
-//                     <div className="text-4xl font-bold text-gray-900 mb-2">
-//                       $2.4M
-//                     </div>
-//                     <div className="text-gray-600">
-//                       Potential Annual Savings
-//                     </div>
-//                   </div>
-//                   <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white py-3 rounded-xl">
-//                     Calculate Your ROI
-//                   </Button>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* Reviews Section */}
-//       <section
-//         id="reviews"
-//         className="py-24 px-4 bg-gradient-to-br from-gray-50 to-white"
-//       >
-//         <div className="max-w-7xl mx-auto">
-//           <div className="text-center mb-16">
-//             <h2 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
-//               Trusted by{' '}
-//               <span className="bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
-//                 Industry Leaders
-//               </span>
-//             </h2>
-//           </div>
-
-//           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-//             {[
-//               {
-//                 name: 'Sarah Johnson',
-//                 role: 'Operations Director',
-//                 company: 'TechCorp Industries',
-//                 content:
-//                   "Asset Tiger transformed our asset management completely. We've seen a 40% reduction in operational costs and improved efficiency across all departments.",
-//                 rating: 5,
-//               },
-//               {
-//                 name: 'Michael Chen',
-//                 role: 'IT Manager',
-//                 company: 'Global Manufacturing Co.',
-//                 content:
-//                   'The real-time tracking and predictive maintenance features have been game-changers for our operations. Highly recommend Asset Tiger.',
-//                 rating: 5,
-//               },
-//               {
-//                 name: 'Emily Rodriguez',
-//                 role: 'Facility Manager',
-//                 company: 'Metro Healthcare',
-//                 content:
-//                   'Outstanding platform with exceptional support. The ROI was evident within the first quarter of implementation.',
-//                 rating: 5,
-//               },
-//             ].map((review, i) => (
-//               <div
-//                 key={i}
-//                 className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-500 transform hover:scale-105"
-//               >
-//                 <div className="flex items-center space-x-1 mb-4">
-//                   {[...Array(review.rating)].map((_, j) => (
-//                     <Star
-//                       key={j}
-//                       className="w-5 h-5 text-yellow-400 fill-current"
-//                     />
-//                   ))}
-//                 </div>
-//                 <p className="text-gray-700 mb-6 leading-relaxed">
-//                   {review.content}
-//                 </p>
-//                 <div className="flex items-center space-x-4">
-//                   <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center">
-//                     <span className="text-white font-bold text-lg">
-//                       {review.name.charAt(0)}
-//                     </span>
-//                   </div>
-//                   <div>
-//                     <div className="font-semibold text-gray-900">
-//                       {review.name}
-//                     </div>
-//                     <div className="text-sm text-gray-600">{review.role}</div>
-//                     <div className="text-sm text-gray-500">
-//                       {review.company}
-//                     </div>
-//                   </div>
-//                 </div>
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* CTA Section */}
-//       <section className="py-24 px-4 bg-gradient-to-r from-yellow-500 via-orange-500 to-yellow-600">
-//         <div className="max-w-4xl mx-auto text-center">
-//           <h2 className="text-4xl md:text-6xl font-bold mb-6 text-white">
-//             Ready to Transform Your Asset Management?
-//           </h2>
-//           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-//             Join thousands of companies already using Asset Tiger to optimize
-//             their operations and reduce costs.
-//           </p>
-//           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-//             <Button className="bg-white text-gray-900 hover:bg-gray-100 px-8 py-6 text-lg rounded-2xl shadow-xl font-semibold transform hover:scale-105 transition-all duration-300">
-//               Start Your Free Trial
-//               <ArrowRight className="ml-2 w-5 h-5" />
-//             </Button>
-//             <Button
-//               variant="outline"
-//               className="border-2 border-white text-white hover:bg-white/10 px-8 py-6 text-lg rounded-2xl font-semibold"
-//             >
-//               Schedule Demo
-//             </Button>
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* Contact Section */}
-//       <section
-//         id="contact"
-//         className="py-24 px-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white"
-//       >
-//         <div className="max-w-7xl mx-auto">
-//           <div className="grid lg:grid-cols-2 gap-16">
 //             <div>
-//               <h2 className="text-4xl md:text-6xl font-bold mb-8">
-//                 <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-//                   Get in Touch
-//                 </span>
-//               </h2>
-//               <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-//                 Ready to revolutionize your asset management? Our team is here
-//                 to help you get started.
-//               </p>
+//               <h3 className="font-semibold text-gray-900 mb-4">Categories</h3>
+//               <ul className="space-y-2 text-sm text-gray-600">
+//                 <li>
+//                   <a href="#" className="hover:text-green-600">
+//                     Fresh Produce
+//                   </a>
+//                 </li>
+//                 <li>
+//                   <a href="#" className="hover:text-green-600">
+//                     Dairy Products
+//                   </a>
+//                 </li>
+//                 <li>
+//                   <a href="#" className="hover:text-green-600">
+//                     Meat & Poultry
+//                   </a>
+//                 </li>
+//                 <li>
+//                   <a href="#" className="hover:text-green-600">
+//                     Spices & Condiments
+//                   </a>
+//                 </li>
+//               </ul>
+//             </div>
 
-//               <div className="space-y-6">
-//                 <div className="flex items-center space-x-4">
-//                   <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl flex items-center justify-center">
-//                     <span className="text-gray-900 font-bold">📧</span>
-//                   </div>
-//                   <div>
-//                     <div className="font-semibold">Email</div>
-//                     <div className="text-gray-400">hello@assettiger.com</div>
-//                   </div>
+//             <div>
+//               <h3 className="font-semibold text-gray-900 mb-4">Contact Info</h3>
+//               <div className="space-y-3 text-sm text-gray-600">
+//                 <div className="flex items-center space-x-2">
+//                   <MapPin className="w-4 h-4" />
+//                   <span>123 Organic Street, City, State 12345</span>
 //                 </div>
-//                 <div className="flex items-center space-x-4">
-//                   <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl flex items-center justify-center">
-//                     <span className="text-gray-900 font-bold">📞</span>
-//                   </div>
-//                   <div>
-//                     <div className="font-semibold">Phone</div>
-//                     <div className="text-gray-400">+1 (555) 123-TIGER</div>
-//                   </div>
+//                 <div className="flex items-center space-x-2">
+//                   <Phone className="w-4 h-4" />
+//                   <span>+91 98765 43210</span>
 //                 </div>
-//                 <div className="flex items-center space-x-4">
-//                   <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl flex items-center justify-center">
-//                     <span className="text-gray-900 font-bold">📍</span>
-//                   </div>
-//                   <div>
-//                     <div className="font-semibold">Address</div>
-//                     <div className="text-gray-400">
-//                       123 Innovation Drive
-//                       <br />
-//                       Tech Valley, CA 94025
-//                     </div>
-//                   </div>
+//                 <div className="flex items-center space-x-2">
+//                   <Mail className="w-4 h-4" />
+//                   <span>hello@anukaorganic.com</span>
 //                 </div>
 //               </div>
 //             </div>
+//           </div>
 
-//             <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10">
-//               <form className="space-y-6">
-//                 <div className="grid md:grid-cols-2 gap-4">
-//                   <div>
-//                     <label className="block text-sm font-medium mb-2">
-//                       First Name
-//                     </label>
-//                     <input
-//                       type="text"
-//                       className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-yellow-400 focus:outline-none transition-colors"
-//                       placeholder="John"
-//                     />
-//                   </div>
-//                   <div>
-//                     <label className="block text-sm font-medium mb-2">
-//                       Last Name
-//                     </label>
-//                     <input
-//                       type="text"
-//                       className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-yellow-400 focus:outline-none transition-colors"
-//                       placeholder="Doe"
-//                     />
-//                   </div>
-//                 </div>
-//                 <div>
-//                   <label className="block text-sm font-medium mb-2">
-//                     Email
-//                   </label>
-//                   <input
-//                     type="email"
-//                     className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-yellow-400 focus:outline-none transition-colors"
-//                     placeholder="john@company.com"
-//                   />
-//                 </div>
-//                 <div>
-//                   <label className="block text-sm font-medium mb-2">
-//                     Company
-//                   </label>
-//                   <input
-//                     type="text"
-//                     className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-yellow-400 focus:outline-none transition-colors"
-//                     placeholder="Your Company"
-//                   />
-//                 </div>
-//                 <div>
-//                   <label className="block text-sm font-medium mb-2">
-//                     Message
-//                   </label>
-//                   <textarea
-//                     rows={4}
-//                     className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-yellow-400 focus:outline-none transition-colors resize-none"
-//                     placeholder="Tell us about your asset management needs..."
-//                   ></textarea>
-//                 </div>
-//                 <Button className="w-full bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-gray-900 py-4 rounded-xl font-semibold text-lg transform hover:scale-105 transition-all duration-300">
-//                   Send Message
-//                   <ArrowRight className="ml-2 w-5 h-5" />
-//                 </Button>
-//               </form>
-//             </div>
+//           <div className="border-t border-gray-200 mt-8 pt-8 text-center text-sm text-gray-600">
+//             <p>&copy; 2024 Anuka Organic. All rights reserved.</p>
 //           </div>
 //         </div>
-//       </section>
-
-//       {/* FAQ Section */}
-//       <section
-//         id="faqs"
-//         className="py-24 px-4 bg-gradient-to-br from-gray-50 to-white"
-//       >
-//         <div className="max-w-4xl mx-auto">
-//           <div className="text-center mb-16">
-//             <h2 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
-//               Frequently Asked{' '}
-//               <span className="bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
-//                 Questions
-//               </span>
-//             </h2>
-//             <p className="text-xl text-gray-600">
-//               Everything you need to know about Asset Tiger
-//             </p>
-//           </div>
-
-//           <div className="space-y-6">
-//             {[
-//               {
-//                 question: 'How quickly can we implement Asset Tiger?',
-//                 answer:
-//                   'Most organizations are up and running within 2-4 weeks. Our dedicated onboarding team ensures a smooth transition with minimal disruption to your operations.',
-//               },
-//               {
-//                 question:
-//                   'Can Asset Tiger integrate with our existing systems?',
-//                 answer:
-//                   'Yes! Asset Tiger offers robust APIs and pre-built integrations with popular ERP, CMMS, and accounting systems. Our integration team can help with custom connections.',
-//               },
-//               {
-//                 question: 'What kind of support do you provide?',
-//                 answer:
-//                   'We offer comprehensive support including 24/7 technical assistance, dedicated account managers for Enterprise clients, extensive documentation, and regular training sessions.',
-//               },
-//               {
-//                 question: 'Is my data secure with Asset Tiger?',
-//                 answer:
-//                   'Absolutely. We use enterprise-grade encryption, SOC 2 compliance, and follow industry best practices for data security. Your data is hosted in secure, redundant data centers.',
-//               },
-//               {
-//                 question: 'Can I try Asset Tiger before purchasing?',
-//                 answer:
-//                   'Yes! We offer a 14-day free trial with full access to all features. No credit card required. Our team can also provide a personalized demo tailored to your needs.',
-//               },
-//             ].map((faq, i) => (
-//               <div
-//                 key={i}
-//                 className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-all duration-300"
-//               >
-//                 <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-//                   <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
-//                     <span className="text-white font-bold text-sm">Q</span>
-//                   </div>
-//                   {faq.question}
-//                 </h3>
-//                 <p className="text-gray-700 leading-relaxed ml-12">
-//                   {faq.answer}
-//                 </p>
-//               </div>
-//             ))}
-//           </div>
-
-//           <div className="text-center mt-12">
-//             <p className="text-gray-600 mb-6">Still have questions?</p>
-//             <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white px-8 py-3 rounded-xl font-semibold">
-//               Contact Our Experts
-//             </Button>
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* Footer */}
-      
+//       </footer>
 //     </div>
 //   )
 // }
+
+
 
 
 "use client"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+
 import {
   Search,
   ShoppingCart,
   User,
-  Star,
   Plus,
   Minus,
   X,
@@ -711,8 +931,19 @@ import {
   Twitter,
   Instagram,
   Youtube,
+  ChevronDown,
+  ChevronRight,
+  LogOut,
 } from "lucide-react"
 import Image from "next/image"
+
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import ProductCard from "./product-card"
+import ProductDetails from "./product-details"
+import LoginForm from "./login-form"
+import RegisterForm from "./register-form"
+import CheckoutForm from "./checkout-form"
+
 
 interface Product {
   id: number
@@ -723,6 +954,9 @@ interface Product {
   category: string
   rating: number
   inStock: boolean
+  description?: string
+  features?: string[]
+  nutritionalInfo?: string
 }
 
 interface CartItem extends Product {
@@ -733,8 +967,18 @@ export default function AnukaOrganicHome() {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const [open, setOpen] = useState(false)
+  const [isBrowseOpen, setIsBrowseOpen] = useState(false)
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false)
 
-  // Sample products data
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [currentUser, setCurrentUser] = useState("")
+  const [isLoginOpen, setIsLoginOpen] = useState(false)
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false)
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+
   const products: Product[] = [
     // Poultry & Meat
     {
@@ -746,6 +990,10 @@ export default function AnukaOrganicHome() {
       category: "Poultry & Meat",
       rating: 4.5,
       inStock: true,
+      description:
+        "Premium quality fresh chicken breast, sourced from free-range farms. Perfect for grilling, roasting, or curry preparations.",
+      features: ["Free-range", "Antibiotic-free", "Fresh daily", "High protein"],
+      nutritionalInfo: "Protein: 31g per 100g, Fat: 3.6g per 100g, Calories: 165 per 100g",
     },
     {
       id: 2,
@@ -755,24 +1003,36 @@ export default function AnukaOrganicHome() {
       category: "Poultry & Meat",
       rating: 4.8,
       inStock: true,
+      description:
+        "Tender mutton pieces cut specially for curry preparations. Sourced from grass-fed goats for the best flavor and nutrition.",
+      features: ["Grass-fed", "Tender cuts", "Curry ready", "Rich flavor"],
+      nutritionalInfo: "Protein: 25g per 100g, Fat: 21g per 100g, Iron: 3.3mg per 100g",
     },
     {
       id: 3,
       name: "Fish Fillet",
       price: 380,
-      image: "/pan-seared-fish-fillet.png",
+      image: "/fresh-fish-fillet.jpg",
       category: "Poultry & Meat",
       rating: 4.3,
       inStock: true,
+      description:
+        "Fresh fish fillets, cleaned and ready to cook. Rich in omega-3 fatty acids and high-quality protein.",
+      features: ["Omega-3 rich", "Boneless", "Fresh catch", "Ready to cook"],
+      nutritionalInfo: "Protein: 22g per 100g, Omega-3: 1.2g per 100g, Calories: 206 per 100g",
     },
     {
       id: 4,
       name: "Prawns Large",
       price: 650,
-      image: "/large-prawns.jpg",
+      image: "/large-prawns-seafood.jpg",
       category: "Poultry & Meat",
       rating: 4.6,
       inStock: true,
+      description:
+        "Large, fresh prawns perfect for curries, grills, and seafood preparations. Cleaned and deveined for convenience.",
+      features: ["Large size", "Cleaned & deveined", "Fresh catch", "Versatile cooking"],
+      nutritionalInfo: "Protein: 24g per 100g, Fat: 0.3g per 100g, Calories: 99 per 100g",
     },
 
     // New Arrivals
@@ -780,10 +1040,14 @@ export default function AnukaOrganicHome() {
       id: 5,
       name: "Organic Quinoa",
       price: 320,
-      image: "/organic-quinoa.jpg",
+      image: "/organic-quinoa-grains.jpg",
       category: "New Arrivals",
       rating: 4.4,
       inStock: true,
+      description:
+        "Premium organic quinoa, a complete protein superfood. Perfect for salads, bowls, and healthy meal preparations.",
+      features: ["Complete protein", "Gluten-free", "Organic certified", "Superfood"],
+      nutritionalInfo: "Protein: 14g per 100g, Fiber: 7g per 100g, Calories: 368 per 100g",
     },
     {
       id: 6,
@@ -793,6 +1057,10 @@ export default function AnukaOrganicHome() {
       category: "New Arrivals",
       rating: 4.7,
       inStock: true,
+      description:
+        "Creamy almond butter made from 100% roasted almonds. No added sugar or preservatives, just pure almond goodness.",
+      features: ["100% almonds", "No preservatives", "Creamy texture", "Rich in vitamin E"],
+      nutritionalInfo: "Protein: 21g per 100g, Fat: 49g per 100g, Vitamin E: 25.6mg per 100g",
     },
     {
       id: 7,
@@ -802,6 +1070,10 @@ export default function AnukaOrganicHome() {
       category: "New Arrivals",
       rating: 4.5,
       inStock: true,
+      description:
+        "Cold-pressed virgin coconut oil with natural coconut aroma. Perfect for cooking, baking, and skincare.",
+      features: ["Cold-pressed", "Virgin quality", "Multi-purpose", "Natural aroma"],
+      nutritionalInfo: "Saturated fat: 82g per 100g, Medium-chain triglycerides: 65g per 100g",
     },
     {
       id: 8,
@@ -811,6 +1083,10 @@ export default function AnukaOrganicHome() {
       category: "New Arrivals",
       rating: 4.2,
       inStock: true,
+      description:
+        "Premium green tea leaves rich in antioxidants. Sourced from high-altitude tea gardens for the finest flavor.",
+      features: ["High antioxidants", "Premium leaves", "High-altitude grown", "Natural flavor"],
+      nutritionalInfo: "Antioxidants: High EGCG content, Caffeine: 25mg per cup, Calories: 2 per cup",
     },
 
     // Best Selling
@@ -822,6 +1098,10 @@ export default function AnukaOrganicHome() {
       category: "Best Selling",
       rating: 4.9,
       inStock: true,
+      description:
+        "Premium aged basmati rice with extra-long grains and aromatic fragrance. Perfect for biryanis and pulao.",
+      features: ["Extra-long grains", "Aged rice", "Aromatic", "Premium quality"],
+      nutritionalInfo: "Carbohydrates: 78g per 100g, Protein: 7g per 100g, Calories: 345 per 100g",
     },
     {
       id: 10,
@@ -831,6 +1111,9 @@ export default function AnukaOrganicHome() {
       category: "Best Selling",
       rating: 4.8,
       inStock: true,
+      description: "Pure cow ghee made from fresh cream using traditional methods. Rich in vitamins A, D, E, and K.",
+      features: ["Traditional method", "Pure cow ghee", "Rich in vitamins", "Golden color"],
+      nutritionalInfo: "Fat: 99.8g per 100g, Vitamin A: 840mcg per 100g, Calories: 900 per 100g",
     },
     {
       id: 11,
@@ -840,6 +1123,10 @@ export default function AnukaOrganicHome() {
       category: "Best Selling",
       rating: 4.6,
       inStock: true,
+      description:
+        "Pure turmeric powder with high curcumin content. Known for its anti-inflammatory and antioxidant properties.",
+      features: ["High curcumin", "Anti-inflammatory", "Pure powder", "Natural color"],
+      nutritionalInfo: "Curcumin: 3-5%, Iron: 41.4mg per 100g, Calories: 354 per 100g",
     },
     {
       id: 12,
@@ -849,6 +1136,10 @@ export default function AnukaOrganicHome() {
       category: "Best Selling",
       rating: 4.7,
       inStock: true,
+      description:
+        "Vibrant red chili powder made from premium dried chilies. Adds perfect heat and color to your dishes.",
+      features: ["Premium chilies", "Vibrant color", "Perfect heat", "Fine powder"],
+      nutritionalInfo: "Capsaicin: High, Vitamin C: 144mg per 100g, Calories: 282 per 100g",
     },
 
     // Daily Needs
@@ -860,6 +1151,10 @@ export default function AnukaOrganicHome() {
       category: "Daily Needs",
       rating: 4.3,
       inStock: true,
+      description:
+        "Fresh cow milk from local dairy farms. Rich in calcium, protein, and essential vitamins for daily nutrition.",
+      features: ["Farm fresh", "Rich in calcium", "Daily nutrition", "Local sourced"],
+      nutritionalInfo: "Protein: 3.4g per 100ml, Calcium: 113mg per 100ml, Calories: 42 per 100ml",
     },
     {
       id: 14,
@@ -869,6 +1164,10 @@ export default function AnukaOrganicHome() {
       category: "Daily Needs",
       rating: 4.1,
       inStock: true,
+      description:
+        "Wholesome brown bread made with whole wheat flour. High in fiber and perfect for healthy breakfast.",
+      features: ["Whole wheat", "High fiber", "Healthy choice", "Fresh baked"],
+      nutritionalInfo: "Fiber: 6g per 100g, Protein: 13g per 100g, Calories: 247 per 100g",
     },
     {
       id: 15,
@@ -878,6 +1177,10 @@ export default function AnukaOrganicHome() {
       category: "Daily Needs",
       rating: 4.4,
       inStock: true,
+      description:
+        "Fresh farm eggs from free-range hens. Rich in protein and essential amino acids for daily nutrition.",
+      features: ["Free-range hens", "Fresh daily", "High protein", "Natural feed"],
+      nutritionalInfo: "Protein: 13g per egg, Fat: 11g per egg, Calories: 155 per egg",
     },
     {
       id: 16,
@@ -887,6 +1190,9 @@ export default function AnukaOrganicHome() {
       category: "Daily Needs",
       rating: 4.2,
       inStock: true,
+      description: "Fresh homemade-style yogurt with live cultures. Perfect for digestion and as a healthy snack.",
+      features: ["Live cultures", "Homemade style", "Digestive health", "Creamy texture"],
+      nutritionalInfo: "Protein: 10g per 100g, Probiotics: Live cultures, Calories: 59 per 100g",
     },
 
     // Signature Series
@@ -898,6 +1204,10 @@ export default function AnukaOrganicHome() {
       category: "Signature Series",
       rating: 4.9,
       inStock: true,
+      description:
+        "Our signature spice blend with 15 carefully selected spices. Perfect for authentic Indian curries and dishes.",
+      features: ["15 spice blend", "Signature recipe", "Authentic flavor", "Premium quality"],
+      nutritionalInfo: "Mixed spices with balanced flavor profile, Rich in antioxidants",
     },
     {
       id: 18,
@@ -907,6 +1217,10 @@ export default function AnukaOrganicHome() {
       category: "Signature Series",
       rating: 4.8,
       inStock: true,
+      description:
+        "Exclusive tea blend combining the finest tea leaves from different regions. Rich aroma and perfect strength.",
+      features: ["Multi-region blend", "Rich aroma", "Perfect strength", "Exclusive recipe"],
+      nutritionalInfo: "Antioxidants: High, Caffeine: 40mg per cup, Natural flavor compounds",
     },
     {
       id: 19,
@@ -916,6 +1230,10 @@ export default function AnukaOrganicHome() {
       category: "Signature Series",
       rating: 4.7,
       inStock: true,
+      description:
+        "Raw, unprocessed honey from wildflower meadows. Rich in enzymes, antioxidants, and natural sweetness.",
+      features: ["Raw & unprocessed", "Wildflower source", "Rich in enzymes", "Natural sweetness"],
+      nutritionalInfo: "Natural sugars: 82g per 100g, Antioxidants: High, Calories: 304 per 100g",
     },
     {
       id: 20,
@@ -925,6 +1243,9 @@ export default function AnukaOrganicHome() {
       category: "Signature Series",
       rating: 4.6,
       inStock: true,
+      description: "Pure organic jaggery made from sugarcane juice. Natural sweetener rich in minerals and iron.",
+      features: ["Organic certified", "Sugarcane source", "Rich in minerals", "Natural sweetener"],
+      nutritionalInfo: "Iron: 11mg per 100g, Minerals: Calcium, Magnesium, Calories: 383 per 100g",
     },
 
     // Pickles & Chutney
@@ -936,6 +1257,10 @@ export default function AnukaOrganicHome() {
       category: "Pickles & Chutney",
       rating: 4.5,
       inStock: true,
+      description:
+        "Traditional mango pickle made with raw mangoes and authentic spices. Tangy and spicy flavor that enhances any meal.",
+      features: ["Traditional recipe", "Raw mangoes", "Authentic spices", "Tangy & spicy"],
+      nutritionalInfo: "Vitamin C: High, Probiotics: Fermented, Spices: Traditional blend",
     },
     {
       id: 22,
@@ -945,6 +1270,10 @@ export default function AnukaOrganicHome() {
       category: "Pickles & Chutney",
       rating: 4.3,
       inStock: true,
+      description:
+        "Fresh mint chutney with coriander and green chilies. Perfect accompaniment for snacks and main dishes.",
+      features: ["Fresh mint", "Green chilies", "Perfect accompaniment", "Fresh flavor"],
+      nutritionalInfo: "Vitamin A: High, Antioxidants: Natural, Fresh herbs: Mint, coriander",
     },
     {
       id: 23,
@@ -954,6 +1283,9 @@ export default function AnukaOrganicHome() {
       category: "Pickles & Chutney",
       rating: 4.4,
       inStock: true,
+      description: "Spicy garlic pickle with traditional spices. Known for its health benefits and bold flavor.",
+      features: ["Spicy flavor", "Health benefits", "Traditional spices", "Bold taste"],
+      nutritionalInfo: "Allicin: Natural compound, Antioxidants: High, Traditional spice blend",
     },
     {
       id: 24,
@@ -963,6 +1295,10 @@ export default function AnukaOrganicHome() {
       category: "Pickles & Chutney",
       rating: 4.2,
       inStock: true,
+      description:
+        "Sweet and tangy tamarind chutney perfect for chaats and snacks. Made with pure tamarind and jaggery.",
+      features: ["Sweet & tangy", "Pure tamarind", "Jaggery sweetened", "Chaat perfect"],
+      nutritionalInfo: "Vitamin C: High, Natural acids: Tartaric acid, Antioxidants: Natural",
     },
   ]
 
@@ -974,6 +1310,57 @@ export default function AnukaOrganicHome() {
     "Signature Series",
     "Pickles & Chutney",
   ]
+
+  const categorySubmenus = {
+    "Poultry & Meat": [
+      { name: "Fresh Chicken", count: 8 },
+      { name: "Mutton & Lamb", count: 5 },
+      { name: "Fish & Seafood", count: 12 },
+      { name: "Eggs", count: 3 },
+      { name: "Processed Meat", count: 6 },
+    ],
+    "New Arrivals": [
+      { name: "Organic Grains", count: 7 },
+      { name: "Superfoods", count: 9 },
+      { name: "Health Drinks", count: 4 },
+      { name: "Snacks", count: 11 },
+      { name: "Seasonal Items", count: 6 },
+    ],
+    "Best Selling": [
+      { name: "Rice & Grains", count: 15 },
+      { name: "Cooking Oils", count: 8 },
+      { name: "Spices", count: 20 },
+      { name: "Dairy Products", count: 10 },
+      { name: "Pulses & Lentils", count: 12 },
+    ],
+    "Daily Needs": [
+      { name: "Milk & Dairy", count: 8 },
+      { name: "Bread & Bakery", count: 6 },
+      { name: "Beverages", count: 12 },
+      { name: "Personal Care", count: 15 },
+      { name: "Household Items", count: 18 },
+    ],
+    "Signature Series": [
+      { name: "Premium Spices", count: 12 },
+      { name: "Artisan Products", count: 8 },
+      { name: "Gift Hampers", count: 5 },
+      { name: "Limited Edition", count: 3 },
+      { name: "Chef's Special", count: 7 },
+    ],
+    "Pickles & Chutney": [
+      { name: "Mango Pickles", count: 6 },
+      { name: "Mixed Pickles", count: 8 },
+      { name: "Chutneys", count: 10 },
+      { name: "Preserves", count: 5 },
+      { name: "Regional Specials", count: 12 },
+    ],
+  }
+
+  const filteredProducts = products.filter(
+    (product) =>
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchQuery.toLowerCase()),
+  )
 
   const addToCart = (product: Product) => {
     setCartItems((prev) => {
@@ -1001,21 +1388,102 @@ export default function AnukaOrganicHome() {
     return cartItems.reduce((total, item) => total + item.quantity, 0)
   }
 
+  const openProductModal = (product: Product) => {
+    setSelectedProduct(product)
+    setIsProductModalOpen(true)
+  }
+
+  const closeProductModal = () => {
+    setIsProductModalOpen(false)
+    setSelectedProduct(null)
+  }
+
+  const handleLogin = (username: string) => {
+    setIsLoggedIn(true)
+    setCurrentUser(username)
+  }
+
+  const handleLogout = () => {
+    setIsLoggedIn(false)
+    setCurrentUser("")
+  }
+
+  const handleOrderComplete = () => {
+    setCartItems([])
+    alert("Order placed successfully! You will receive a confirmation call shortly.")
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center space-x-3">
-              <Image 
-              height={48}
-              width={48}
-               src="/anuka-logo.png" alt="Anuka Organic Logo" className="w-12 h-12 object-contain" />
-              <div className="flex flex-col">
-                <span className="text-2xl font-bold text-green-700">Anuka</span>
-                <span className="text-sm font-medium text-green-600 -mt-1">ORGANIC</span>
+            {/* Logo and Browse Categories */}
+            <div className="flex items-center space-x-6">
+              {/* Logo */}
+              <div className="flex items-center space-x-3">
+                <Image
+                  height={48}
+                  width={48}
+                  src="/anuka-organic-logo.jpg"
+                  alt="Anuka Organic Logo"
+                  className="w-12 h-12 object-contain"
+                />
+                <div className="flex flex-col">
+                  <span className="text-2xl font-bold text-green-700">Anuka</span>
+                  <span className="text-sm font-medium text-green-600 -mt-1">ORGANIC</span>
+                </div>
+              </div>
+
+              <div className="relative">
+                <button
+                  className="flex items-center space-x-1 text-gray-700 hover:text-green-600 font-medium transition-colors px-3 py-2"
+                  onMouseEnter={() => setIsBrowseOpen(true)}
+                >
+                  <span className="bg-green-300 p-2 rounded-full">Browse Categories</span>
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+
+                {/* Main Categories Dropdown */}
+                {isBrowseOpen && (
+                  <div
+                    className="absolute top-full left-0 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+                    onMouseLeave={() => {
+                      setIsBrowseOpen(false)
+                      setHoveredCategory(null)
+                    }}
+                  >
+                    {categories.map((category) => (
+                      <div key={category} className="relative" onMouseEnter={() => setHoveredCategory(category)}>
+                        <div className="flex items-center justify-between px-4 py-3 hover:bg-green-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0">
+                          <span className="text-gray-700 hover:text-green-600 font-medium">{category}</span>
+                          <ChevronRight className="w-4 h-4 text-gray-400" />
+                        </div>
+
+                        {/* Subcategories Side Menu */}
+                        {hoveredCategory === category && (
+                          <div className="absolute left-full top-0 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 ml-1">
+                            <div className="p-2">
+                              <h4 className="text-sm font-semibold text-gray-800 px-3 py-2 border-b border-gray-100 mb-2">
+                                {category}
+                              </h4>
+                              {categorySubmenus[category as keyof typeof categorySubmenus]?.map((subcategory) => (
+                                <div
+                                  key={subcategory.name}
+                                  className="flex items-center justify-between px-3 py-2 hover:bg-green-50 cursor-pointer transition-colors rounded"
+                                >
+                                  <span className="text-gray-600 hover:text-green-600 text-sm">{subcategory.name}</span>
+                                  <span className="text-xs text-gray-400">({subcategory.count})</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1023,21 +1491,90 @@ export default function AnukaOrganicHome() {
             <div className="flex-1 max-w-2xl mx-8">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
+                <Input
                   type="text"
                   placeholder="Search for organic products..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
+                {searchQuery && (
+                  <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-lg shadow-lg mt-1 p-2 text-sm text-gray-600">
+                    Found {filteredProducts.length} products matching {searchQuery}
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Right Actions */}
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon" className="text-gray-600 hover:text-green-600">
-                <User className="w-5 h-5" />
-              </Button>
+              <DropdownMenu open={open} onOpenChange={setOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-green-600 hover:bg-green-50 px-3 py-2 rounded-lg transition-all duration-200"
+                    onMouseEnter={() => setOpen(true)}
+                  >
+                    <User className="w-5 h-5" />
+                    {isLoggedIn && <span className="hidden sm:block text-sm font-medium">Hi, {currentUser}</span>}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  className="w-56 p-2 bg-white border border-gray-200 rounded-lg shadow-lg"
+                  align="end"
+                  onMouseEnter={() => setOpen(true)}
+                  onMouseLeave={() => setOpen(false)}
+                >
+                  {!isLoggedIn ? (
+                    <>
+                      <DropdownMenuItem
+                        onClick={() => setIsLoginOpen(true)}
+                        className="flex items-center space-x-2 px-3 py-2 hover:bg-green-50 rounded-md cursor-pointer transition-colors"
+                      >
+                        <User className="w-4 h-4 text-green-600" />
+                        <span className="text-gray-700">Log In</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setIsRegisterOpen(true)}
+                        className="flex items-center space-x-2 px-3 py-2 hover:bg-green-50 rounded-md cursor-pointer transition-colors"
+                      >
+                        <User className="w-4 h-4 text-green-600" />
+                        <span className="text-gray-700">Register</span>
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
+                    <>
+                      <div className="px-3 py-2 border-b border-gray-100 mb-2">
+                        <p className="text-sm font-medium text-gray-900">Welcome back!</p>
+                        <p className="text-xs text-gray-600">{currentUser}</p>
+                      </div>
+                      <DropdownMenuItem
+                        onClick={() => console.log("My Orders")}
+                        className="flex items-center space-x-2 px-3 py-2 hover:bg-green-50 rounded-md cursor-pointer transition-colors"
+                      >
+                        <ShoppingCart className="w-4 h-4 text-green-600" />
+                        <span className="text-gray-700">My Orders</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => console.log("Profile")}
+                        className="flex items-center space-x-2 px-3 py-2 hover:bg-green-50 rounded-md cursor-pointer transition-colors"
+                      >
+                        <User className="w-4 h-4 text-green-600" />
+                        <span className="text-gray-700">My Profile</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={handleLogout}
+                        className="flex items-center space-x-2 px-3 py-2 hover:bg-red-50 rounded-md cursor-pointer transition-colors"
+                      >
+                        <LogOut className="w-4 h-4 text-red-600" />
+                        <span className="text-red-700">Logout</span>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Cart Button */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -1087,90 +1624,66 @@ export default function AnukaOrganicHome() {
         </div>
       </section>
 
+      {/* Search Results */}
+      {searchQuery && (
+        <section className="container mx-auto px-4 py-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Search Results for {searchQuery} ({filteredProducts.length} items)
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onProductClick={openProductModal}
+                onAddToCart={addToCart}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Product Categories */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {categories.map((category) => (
-          <section key={category} id={category.toLowerCase().replace(/\s+/g, "-")} className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">{category}</h2>
-              <Button
-                variant="outline"
-                className="text-green-600 border-green-600 hover:bg-green-600 hover:text-white bg-transparent"
-              >
-                View All
-              </Button>
-            </div>
+      {!searchQuery && (
+        <main className="container mx-auto px-4 py-8">
+          {categories.map((category) => (
+            <section key={category} id={category.toLowerCase().replace(/\s+/g, "-")} className="mb-12">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">{category}</h2>
+                <Button
+                  variant="outline"
+                  className="text-green-600 border-green-600 hover:bg-green-600 hover:text-white bg-transparent"
+                >
+                  View All
+                </Button>
+              </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {products
-                .filter((product) => product.category === category)
-                .map((product) => (
-                  <div
-                    key={product.id}
-                    className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
-                  >
-                    <div className="aspect-square relative overflow-hidden rounded-t-lg">
-                      <Image
-                        height={300}
-                        width={300}
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                      {product.originalPrice && (
-                        <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
-                          {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
-                        </div>
-                      )}
-                    </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {products
+                  .filter((product) => product.category === category)
+                  .map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onProductClick={openProductModal}
+                      onAddToCart={addToCart}
+                    />
+                  ))}
+              </div>
+            </section>
+          ))}
+        </main>
+      )}
 
-                    <div className="p-4">
-                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
-
-                      <div className="flex items-center mb-2">
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-4 h-4 ${
-                                i < Math.floor(product.rating) ? "text-yellow-400 fill-current" : "text-gray-300"
-                              }`}
-                            />
-                          ))}
-                          <span className="text-sm text-gray-500 ml-1">({product.rating})</span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-lg font-bold text-gray-900">₹{product.price}</span>
-                          {product.originalPrice && (
-                            <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
-                          )}
-                        </div>
-                        <span
-                          className={`text-xs px-2 py-1 rounded ${
-                            product.inStock ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {product.inStock ? "In Stock" : "Out of Stock"}
-                        </span>
-                      </div>
-
-                      <Button
-                        onClick={() => addToCart(product)}
-                        disabled={!product.inStock}
-                        className="w-full bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-300"
-                      >
-                        Add to Cart
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </section>
-        ))}
-      </main>
+      {/* Product Details Modal */}
+      {selectedProduct && (
+        <ProductDetails
+          product={selectedProduct}
+          isOpen={isProductModalOpen}
+          onClose={closeProductModal}
+          onAddToCart={addToCart}
+        />
+      )}
 
       {/* Cart Sidebar */}
       {isCartOpen && (
@@ -1236,12 +1749,47 @@ export default function AnukaOrganicHome() {
                   <span className="text-lg font-semibold">Total:</span>
                   <span className="text-lg font-bold text-green-600">₹{getTotalPrice()}</span>
                 </div>
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white">Proceed to Checkout</Button>
+                <Button
+                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  onClick={() => {
+                    setIsCartOpen(false)
+                    setIsCheckoutOpen(true)
+                  }}
+                >
+                  Proceed to Checkout
+                </Button>
               </div>
             )}
           </div>
         </div>
       )}
+
+      <LoginForm
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onLogin={handleLogin}
+        onSwitchToRegister={() => {
+          setIsLoginOpen(false)
+          setIsRegisterOpen(true)
+        }}
+      />
+
+      <RegisterForm
+        isOpen={isRegisterOpen}
+        onClose={() => setIsRegisterOpen(false)}
+        onRegister={handleLogin}
+        onSwitchToLogin={() => {
+          setIsRegisterOpen(false)
+          setIsLoginOpen(true)
+        }}
+      />
+
+      <CheckoutForm
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        cartTotal={getTotalPrice()}
+        onOrderComplete={handleOrderComplete}
+      />
 
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-16">
@@ -1250,10 +1798,13 @@ export default function AnukaOrganicHome() {
             <div>
               {/* Logo */}
               <div className="flex items-center space-x-3 mb-4">
-                <Image 
-                height={40}
-                width={40}
-                 src="/anuka-logo.png" alt="Anuka Organic Logo" className="w-10 h-10 object-contain" />
+                <Image
+                  height={40}
+                  width={40}
+                  src="/anuka-organic-logo.jpg"
+                  alt="Anuka Organic Logo"
+                  className="w-10 h-10 object-contain"
+                />
                 <div className="flex flex-col">
                   <span className="text-xl font-bold text-green-700">Anuka</span>
                   <span className="text-xs font-medium text-green-600 -mt-1">ORGANIC</span>
