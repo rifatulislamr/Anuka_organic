@@ -1,7 +1,7 @@
 import { Toaster } from '@/components/ui/toaster'
 import '.././globals.css'
 import { Inter } from 'next/font/google'
-import HomeNavbar from '@/components/shared/home-navbar'
+
 import Footer from '@/components/shared/footer'
 const inter = Inter({ subsets: ['latin'] })
 
