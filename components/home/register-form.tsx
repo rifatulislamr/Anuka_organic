@@ -1,11 +1,12 @@
+
+
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { X, User, Lock, Mail } from "lucide-react"
+import { X, User, Lock, Mail, Eye, EyeOff } from "lucide-react"
 
 interface RegisterFormProps {
   isOpen: boolean
@@ -21,6 +22,8 @@ export default function RegisterForm({ isOpen, onClose, onRegister, onSwitchToLo
     password: "",
     confirmPassword: "",
   })
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
 
@@ -79,6 +82,7 @@ export default function RegisterForm({ isOpen, onClose, onRegister, onSwitchToLo
             </div>
           )}
 
+          {/* Username */}
           <div className="space-y-2">
             <label htmlFor="reg-username" className="text-sm font-medium text-gray-700">
               Username
@@ -97,6 +101,7 @@ export default function RegisterForm({ isOpen, onClose, onRegister, onSwitchToLo
             </div>
           </div>
 
+          {/* Email */}
           <div className="space-y-2">
             <label htmlFor="reg-email" className="text-sm font-medium text-gray-700">
               Email
@@ -115,6 +120,7 @@ export default function RegisterForm({ isOpen, onClose, onRegister, onSwitchToLo
             </div>
           </div>
 
+          {/* Password */}
           <div className="space-y-2">
             <label htmlFor="reg-password" className="text-sm font-medium text-gray-700">
               Password
@@ -123,16 +129,24 @@ export default function RegisterForm({ isOpen, onClose, onRegister, onSwitchToLo
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 id="reg-password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={formData.password}
                 onChange={(e) => handleInputChange("password", e.target.value)}
                 placeholder="Create a password"
-                className="pl-10"
+                className="pl-10 pr-10"
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
           </div>
 
+          {/* Confirm Password */}
           <div className="space-y-2">
             <label htmlFor="reg-confirm-password" className="text-sm font-medium text-gray-700">
               Confirm Password
@@ -141,13 +155,20 @@ export default function RegisterForm({ isOpen, onClose, onRegister, onSwitchToLo
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 id="reg-confirm-password"
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 value={formData.confirmPassword}
                 onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
                 placeholder="Confirm your password"
-                className="pl-10"
+                className="pl-10 pr-10"
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              >
+                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
           </div>
 

@@ -188,7 +188,7 @@ export default function CheckoutForm({ isOpen, onClose, cartTotal, onOrderComple
             </div>
 
             <div className="flex justify-between pt-4">
-              <div className="text-lg font-semibold text-gray-900">Total: ₹{cartTotal}</div>
+              <div className="text-lg font-semibold text-gray-900">Total: ৳{cartTotal}</div>
               <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-8">
                 Continue to Payment
               </Button>
@@ -273,15 +273,15 @@ export default function CheckoutForm({ isOpen, onClose, cartTotal, onOrderComple
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
                   <span>Subtotal:</span>
-                  <span>₹{cartTotal}</span>
+                  <span>৳{cartTotal}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Delivery Fee:</span>
-                  <span>₹50</span>
+                  <span>৳50</span>
                 </div>
                 <div className="flex justify-between font-semibold text-lg border-t pt-2">
                   <span>Total:</span>
-                  <span>₹{cartTotal + 50}</span>
+                  <span>৳{cartTotal + 50}</span>
                 </div>
               </div>
             </div>
@@ -295,7 +295,7 @@ export default function CheckoutForm({ isOpen, onClose, cartTotal, onOrderComple
                 disabled={isProcessing || (paymentMethod === "bkash" && !bkashNumber)}
                 className="bg-green-600 hover:bg-green-700 text-white px-8"
               >
-                {isProcessing ? "Processing..." : `Place Order (₹${cartTotal + 50})`}
+                {isProcessing ? "Processing..." : `Place Order (৳${cartTotal + 50})`}
               </Button>
             </div>
           </form>

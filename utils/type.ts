@@ -1,4 +1,4 @@
-import { isLastDayOfMonth } from 'date-fns'
+
 import { z } from 'zod'
 
 export const companySchema = z.object({
@@ -54,7 +54,15 @@ export type CreateTransactionType = z.infer<typeof createTransactionSchema>
 
 
 
-
+export interface User {
+  userId: number
+  username: string
+  roleId: number
+  roleName: string
+  userCompanies: Company[]
+  userLocations: Location[]
+  voucherTypes: string[]
+}
 
 
 
