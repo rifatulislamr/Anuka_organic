@@ -1,55 +1,90 @@
+'use client'
 
+import type React from 'react'
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { X, User, Lock, Mail, Eye, EyeOff } from 'lucide-react'
+import { fetchApi } from '@/utils/http'
+import { z } from 'zod'
 
-"use client"
-
-import type React from "react"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { X, User, Lock, Mail, Eye, EyeOff } from "lucide-react"
+import { validatePassword } from '@/utils/validatePassword'
+import { RegisterRequestSchema } from '@/utils/type'
+import { registerUser } from '@/api/signup-api'
 
 interface RegisterFormProps {
   isOpen: boolean
   onClose: () => void
-  onRegister: (username: string) => void
+  onRegister: (user: { username: string; email: string }) => void
   onSwitchToLogin: () => void
 }
 
-export default function RegisterForm({ isOpen, onClose, onRegister, onSwitchToLogin }: RegisterFormProps) {
+export default function RegisterForm({
+  isOpen,
+  onClose,
+  onRegister,
+  onSwitchToLogin,
+}: RegisterFormProps) {
   const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError("")
-    setSuccess("")
+    setError('')
+    setSuccess('')
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match")
+      setError('Passwords do not match')
       return
     }
 
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long")
-      return
-    }
+    try {
+      setLoading(true)
+      const validatedData = RegisterRequestSchema.parse({
+        ...formData,
+        roleId: 2,
+      })
+      const response = await registerUser(validatedData)
 
-    // Simulate successful registration
-    setSuccess("Registration successful! You can now login with your credentials.")
-    setTimeout(() => {
-      onRegister(formData.username)
-      onClose()
-      setFormData({ username: "", email: "", password: "", confirmPassword: "" })
-      setSuccess("")
-    }, 2000)
+      if (response.data && response.data.status === 'success') {
+        setSuccess(
+          'Registration successful! You can now login with your credentials.'
+        )
+        onRegister({
+          username: response.data.data.user.username,
+          email: response.data.data.user.email,
+        })
+        setTimeout(() => {
+          onClose()
+          setFormData({
+            username: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+          })
+          setSuccess('')
+        }, 2000)
+      } else {
+        setError('Registration failed. Please try again.')
+      }
+    } catch (err: any) {
+      if (err.errors) {
+        setError('Validation failed. Please check your inputs.')
+      } else {
+        setError(err.message || 'An error occurred. Please try again.')
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleInputChange = (field: string, value: string) => {
@@ -60,10 +95,15 @@ export default function RegisterForm({ isOpen, onClose, onRegister, onSwitchToLo
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
-      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black bg-opacity-50"
+        onClick={onClose}
+      />
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-lg shadow-xl">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Create New Account</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Create New Account
+          </h2>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="w-5 h-5" />
           </Button>
@@ -84,7 +124,10 @@ export default function RegisterForm({ isOpen, onClose, onRegister, onSwitchToLo
 
           {/* Username */}
           <div className="space-y-2">
-            <label htmlFor="reg-username" className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="reg-username"
+              className="text-sm font-medium text-gray-700"
+            >
               Username
             </label>
             <div className="relative">
@@ -93,7 +136,7 @@ export default function RegisterForm({ isOpen, onClose, onRegister, onSwitchToLo
                 id="reg-username"
                 type="text"
                 value={formData.username}
-                onChange={(e) => handleInputChange("username", e.target.value)}
+                onChange={(e) => handleInputChange('username', e.target.value)}
                 placeholder="Choose a username"
                 className="pl-10"
                 required
@@ -103,7 +146,10 @@ export default function RegisterForm({ isOpen, onClose, onRegister, onSwitchToLo
 
           {/* Email */}
           <div className="space-y-2">
-            <label htmlFor="reg-email" className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="reg-email"
+              className="text-sm font-medium text-gray-700"
+            >
               Email
             </label>
             <div className="relative">
@@ -112,7 +158,7 @@ export default function RegisterForm({ isOpen, onClose, onRegister, onSwitchToLo
                 id="reg-email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
+                onChange={(e) => handleInputChange('email', e.target.value)}
                 placeholder="Enter your email"
                 className="pl-10"
                 required
@@ -122,16 +168,19 @@ export default function RegisterForm({ isOpen, onClose, onRegister, onSwitchToLo
 
           {/* Password */}
           <div className="space-y-2">
-            <label htmlFor="reg-password" className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="reg-password"
+              className="text-sm font-medium text-gray-700"
+            >
               Password
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 id="reg-password"
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 value={formData.password}
-                onChange={(e) => handleInputChange("password", e.target.value)}
+                onChange={(e) => handleInputChange('password', e.target.value)}
                 placeholder="Create a password"
                 className="pl-10 pr-10"
                 required
@@ -141,23 +190,32 @@ export default function RegisterForm({ isOpen, onClose, onRegister, onSwitchToLo
                 onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
               >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
               </button>
             </div>
           </div>
 
           {/* Confirm Password */}
           <div className="space-y-2">
-            <label htmlFor="reg-confirm-password" className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="reg-confirm-password"
+              className="text-sm font-medium text-gray-700"
+            >
               Confirm Password
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 id="reg-confirm-password"
-                type={showConfirmPassword ? "text" : "password"}
+                type={showConfirmPassword ? 'text' : 'password'}
                 value={formData.confirmPassword}
-                onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange('confirmPassword', e.target.value)
+                }
                 placeholder="Confirm your password"
                 className="pl-10 pr-10"
                 required
@@ -167,18 +225,26 @@ export default function RegisterForm({ isOpen, onClose, onRegister, onSwitchToLo
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
               >
-                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showConfirmPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
               </button>
             </div>
           </div>
 
-          <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white">
-            Create Account
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-green-600 hover:bg-green-700 text-white"
+          >
+            {loading ? 'Creating...' : 'Create Account'}
           </Button>
 
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              Already have an account?{" "}
+              Already have an account?{' '}
               <button
                 type="button"
                 onClick={onSwitchToLogin}
