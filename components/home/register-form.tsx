@@ -11,11 +11,12 @@ import { z } from 'zod'
 import { validatePassword } from '@/utils/validatePassword'
 import { RegisterRequestSchema } from '@/utils/type'
 import { registerUser } from '@/api/signup-api'
+import { UserType } from './login-form'
 
 interface RegisterFormProps {
   isOpen: boolean
   onClose: () => void
-  onRegister: (user: { username: string; email: string }) => void
+  onRegister: (user:UserType) => void
   onSwitchToLogin: () => void
 }
 
@@ -62,6 +63,8 @@ export default function RegisterForm({
         onRegister({
           username: response.data.data.user.username,
           email: response.data.data.user.email,
+          userId: 0, // Backend should ideally return userId on registration
+          roleId: response.data.data.user.roleId,
         })
         setTimeout(() => {
           onClose()
