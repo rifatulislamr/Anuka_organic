@@ -80,6 +80,30 @@ export type User = {
 }
 
 
+// utils/type.ts
+export type GetProduct = {
+  id: number
+  name: string
+  description: string
+  url: string
+  price: number
+  stock: number
+  categoryId: number
+  isActive: boolean
+  categoryName: string
+  createdAt: string
+}
+
+// Define the type for creating a product
+export type CreateProduct = {
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  categoryId: number;
+  isActive: boolean;
+  url: string; // Image URL
+};
 
 
 

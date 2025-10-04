@@ -1,4 +1,3 @@
-
 // "use client"
 
 // import React, { useState, useEffect } from "react"
@@ -28,21 +27,17 @@
 //   const [activePage, setActivePage] = useState<"profile" | "orders" | "payments">("profile")
 //   const [user, setUser] = useState<User | null>(null)
 
-//   // ✅ Fetch user data from backend
+//   // ✅ Load user from localStorage
 //   useEffect(() => {
-//     const fetchUser = async () => {
+//     const storedUser = localStorage.getItem("currentUser")
+//     if (storedUser) {
 //       try {
-//         const res = await fetch("http://localhost:3000/api/auth/users")
-//         const data: User[] = await res.json()
-//         if (data.length > 0) {
-//           setUser(data[0]) // 👉 assuming first user is the logged-in one
-//         }
-//       } catch (error) {
-//         console.error("Failed to fetch user:", error)
+//         const parsedUser: User = JSON.parse(storedUser)
+//         setUser(parsedUser)
+//       } catch (err) {
+//         console.error("Error parsing stored user:", err)
 //       }
 //     }
-
-//     fetchUser()
 //   }, [])
 
 //   return (
@@ -89,6 +84,7 @@
 
 //       {/* Main Content */}
 //       <main className="flex-1 p-8">
+//         {/* PROFILE SECTION */}
 //         {activePage === "profile" && (
 //           <div>
 //             <h1 className="text-2xl font-semibold text-gray-800 mb-4">
@@ -97,21 +93,11 @@
 //             <div className="bg-white rounded-lg shadow p-6 space-y-3">
 //               {user ? (
 //                 <>
-//                   <p>
-//                     <span className="font-medium">User ID:</span> {user.userId}
-//                   </p>
-//                   <p>
-//                     <span className="font-medium">Username:</span> {user.username}
-//                   </p>
-//                   <p>
-//                     <span className="font-medium">Full Name:</span> {user.fullName ?? "N/A"}
-//                   </p>
-//                   <p>
-//                     <span className="font-medium">Email:</span> {user.email}
-//                   </p>
-//                   <p>
-//                     <span className="font-medium">Phone:</span> {user.phone ?? "N/A"}
-//                   </p>
+
+//                   <p className="capitalize"><span className="font-medium">Name:</span> {user.username}</p>
+//                   <p><span className="font-medium">Full Name:</span> {user.fullName ?? "N/A"}</p>
+//                   <p><span className="font-medium">Email:</span> {user.email}</p>
+//                   <p><span className="font-medium">Phone:</span> {user.phone ?? "N/A"}</p>
 //                   <p>
 //                     <span className="font-medium">Address:</span>{" "}
 //                     {[user.street, user.city, user.state, user.country, user.postalCode]
@@ -132,26 +118,17 @@
 //                       {user.roleName ?? "N/A"}
 //                     </span>
 //                   </p>
-//                   <p>
-//                     <span className="font-medium">Active:</span>{" "}
-//                     {user.active ? "Yes" : "No"}
-//                   </p>
-//                   <p>
-//                     <span className="font-medium">Created At:</span>{" "}
-//                     {new Date(user.createdAt).toLocaleString()}
-//                   </p>
-//                   <p>
-//                     <span className="font-medium">Updated At:</span>{" "}
-//                     {new Date(user.updatedAt).toLocaleString()}
-//                   </p>
+//                   <p><span className="font-medium">Active:</span> {user.active ? "Yes" : "No"}</p>
+
 //                 </>
 //               ) : (
-//                 <p>Loading profile...</p>
+//                 <p>No user info found in localStorage.</p>
 //               )}
 //             </div>
 //           </div>
 //         )}
 
+//         {/* ORDERS SECTION */}
 //         {activePage === "orders" && (
 //           <div>
 //             <h1 className="text-2xl font-semibold text-gray-800 mb-4">
@@ -186,6 +163,7 @@
 //           </div>
 //         )}
 
+//         {/* PAYMENTS SECTION */}
 //         {activePage === "payments" && (
 //           <div>
 //             <h1 className="text-2xl font-semibold text-gray-800 mb-4">
@@ -229,11 +207,11 @@
 
 // export default UserDashboard
 
+'use client'
 
-
-"use client"
-
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect } from 'react'
+import { ArrowLeft } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 // ✅ User type from backend
 type User = {
@@ -254,21 +232,39 @@ type User = {
   isPasswordResetRequired: boolean
   createdAt: string
   updatedAt: string
+
+  // ✅ Nested role object (from backend)
+  role?: {
+    roleId: number
+    roleName: string
+    rolePermissions: {
+      roleId: number
+      permissionId: number
+      permission: {
+        id: number
+        name: string
+      }
+    }[]
+  } | null
 }
 
 const UserDashboard = () => {
-  const [activePage, setActivePage] = useState<"profile" | "orders" | "payments">("profile")
+  const [activePage, setActivePage] = useState<
+    'profile' | 'orders' | 'payments'
+  >('profile')
   const [user, setUser] = useState<User | null>(null)
+  const router = useRouter()
 
   // ✅ Load user from localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("currentUser")
+    const storedUser = localStorage.getItem('currentUser')
+    console.log('Stored User:', storedUser) // Debugging log
     if (storedUser) {
       try {
         const parsedUser: User = JSON.parse(storedUser)
         setUser(parsedUser)
       } catch (err) {
-        console.error("Error parsing stored user:", err)
+        console.error('Error parsing stored user:', err)
       }
     }
   }, [])
@@ -283,31 +279,31 @@ const UserDashboard = () => {
 
         <nav className="flex flex-col space-y-2">
           <button
-            onClick={() => setActivePage("profile")}
+            onClick={() => setActivePage('profile')}
             className={`px-4 py-2 rounded-md text-left transition-colors ${
-              activePage === "profile"
-                ? "bg-green-600 text-white"
-                : "text-gray-700 hover:bg-green-50"
+              activePage === 'profile'
+                ? 'bg-green-600 text-white'
+                : 'text-gray-700 hover:bg-green-50'
             }`}
           >
             Profile
           </button>
           <button
-            onClick={() => setActivePage("orders")}
+            onClick={() => setActivePage('orders')}
             className={`px-4 py-2 rounded-md text-left transition-colors ${
-              activePage === "orders"
-                ? "bg-green-600 text-white"
-                : "text-gray-700 hover:bg-green-50"
+              activePage === 'orders'
+                ? 'bg-green-600 text-white'
+                : 'text-gray-700 hover:bg-green-50'
             }`}
           >
             Orders
           </button>
           <button
-            onClick={() => setActivePage("payments")}
+            onClick={() => setActivePage('payments')}
             className={`px-4 py-2 rounded-md text-left transition-colors ${
-              activePage === "payments"
-                ? "bg-green-600 text-white"
-                : "text-gray-700 hover:bg-green-50"
+              activePage === 'payments'
+                ? 'bg-green-600 text-white'
+                : 'text-gray-700 hover:bg-green-50'
             }`}
           >
             Payments
@@ -317,43 +313,95 @@ const UserDashboard = () => {
 
       {/* Main Content */}
       <main className="flex-1 p-8">
+        {/* Back Button */}
+        <button
+          onClick={() => router.push('/')}
+          className="mb-6 flex items-center text-green-600 hover:text-green-800 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Back to Home
+        </button>
+
         {/* PROFILE SECTION */}
-        {activePage === "profile" && (
+        {activePage === 'profile' && (
           <div>
             <h1 className="text-2xl font-semibold text-gray-800 mb-4">
               My Profile
             </h1>
-            <div className="bg-white rounded-lg shadow p-6 space-y-3">
+            <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
               {user ? (
-                <>
-                  
-                  <p className="capitalize"><span className="font-medium">Name:</span> {user.username}</p>
-                  <p><span className="font-medium">Full Name:</span> {user.fullName ?? "N/A"}</p>
-                  <p><span className="font-medium">Email:</span> {user.email}</p>
-                  <p><span className="font-medium">Phone:</span> {user.phone ?? "N/A"}</p>
-                  <p>
-                    <span className="font-medium">Address:</span>{" "}
-                    {[user.street, user.city, user.state, user.country, user.postalCode]
-                      .filter(Boolean)
-                      .join(", ") || "N/A"}
-                  </p>
-                  <p>
-                    <span className="font-medium">Role:</span>{" "}
-                    <span
-                      className={`capitalize ${
-                        user.roleName?.toLowerCase() === "admin"
-                          ? "text-green-600 font-semibold"
-                          : user.roleName?.toLowerCase() === "user"
-                          ? "text-blue-600 font-semibold"
-                          : "text-gray-700"
-                      }`}
-                    >
-                      {user.roleName ?? "N/A"}
-                    </span>
-                  </p>
-                  <p><span className="font-medium">Active:</span> {user.active ? "Yes" : "No"}</p>
-               
-                </>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <p className="text-gray-600">
+                      <span className="font-semibold text-gray-800">
+                        Username:
+                      </span>{' '}
+                      {user.username}
+                    </p>
+                    <p className="text-gray-600">
+                      <span className="font-semibold text-gray-800">
+                        Full Name:
+                      </span>{' '}
+                      {user.fullName ?? 'N/A'}
+                    </p>
+                    <p className="text-gray-600">
+                      <span className="font-semibold text-gray-800">
+                        Email:
+                      </span>{' '}
+                      {user.email}
+                    </p>
+                    <p className="text-gray-600">
+                      <span className="font-semibold text-gray-800">
+                        Phone:
+                      </span>{' '}
+                      {user.phone ?? 'N/A'}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-gray-600">
+                      <span className="font-semibold text-gray-800">
+                        Address:
+                      </span>{' '}
+                      {[
+                        user.street,
+                        user.city,
+                        user.state,
+                        user.country,
+                        user.postalCode,
+                      ]
+                        .filter(Boolean)
+                        .join(', ') || 'N/A'}
+                    </p>
+                    <p className="text-gray-600">
+                      <span className="font-semibold text-gray-800">Role:</span>{' '}
+                      <span
+                        className={`capitalize ${
+                          user.role?.roleName?.toLowerCase() === 'admin'
+                            ? 'text-green-600 font-semibold'
+                            : user.role?.roleName?.toLowerCase() === 'user'
+                              ? 'text-blue-600 font-semibold'
+                              : 'text-gray-700'
+                        }`}
+                      >
+                        {user.role?.roleName ?? 'N/A'}
+                      </span>
+                    </p>
+
+                    <p className="text-gray-600">
+                      <span className="font-semibold text-gray-800">
+                        Active:
+                      </span>{' '}
+                      {user.active ? 'Yes' : 'No'}
+                    </p>
+                    <p className="text-gray-600">
+                      <span className="font-semibold text-gray-800">
+                        Member Since:
+                      </span>{' '}
+                      {new Date(user.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
               ) : (
                 <p>No user info found in localStorage.</p>
               )}
@@ -362,7 +410,7 @@ const UserDashboard = () => {
         )}
 
         {/* ORDERS SECTION */}
-        {activePage === "orders" && (
+        {activePage === 'orders' && (
           <div>
             <h1 className="text-2xl font-semibold text-gray-800 mb-4">
               My Orders
@@ -381,7 +429,9 @@ const UserDashboard = () => {
                   <tr className="hover:bg-gray-50">
                     <td className="p-3">#1001</td>
                     <td className="p-3">2025-09-15</td>
-                    <td className="p-3 text-green-600 font-medium">Delivered</td>
+                    <td className="p-3 text-green-600 font-medium">
+                      Delivered
+                    </td>
                     <td className="p-3">$120</td>
                   </tr>
                   <tr className="hover:bg-gray-50">
@@ -397,7 +447,7 @@ const UserDashboard = () => {
         )}
 
         {/* PAYMENTS SECTION */}
-        {activePage === "payments" && (
+        {activePage === 'payments' && (
           <div>
             <h1 className="text-2xl font-semibold text-gray-800 mb-4">
               My Payments
