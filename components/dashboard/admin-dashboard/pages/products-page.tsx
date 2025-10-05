@@ -3,9 +3,10 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { useAtom } from 'jotai'
-import { GetProduct } from '@/utils/type'
+import { GetCategory, GetProduct } from '@/utils/type'
 import { fetchProducts } from '@/api/product-api'
 import { tokenAtom, useInitializeUser } from '@/utils/user'
+import { fetchCategories } from '@/api/categories-api'
 
 // Product creation type
 export type CreateProductForm = {
@@ -54,6 +55,7 @@ const ProductsPage = () => {
   useInitializeUser()
   const [token] = useAtom(tokenAtom)
   const [products, setProducts] = useState<GetProduct[]>([])
+  const [categories, setCategories] = useState<GetCategory[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -63,16 +65,17 @@ const ProductsPage = () => {
     description: '',
     price: 0,
     stock: 0,
-    categoryId: 1,
+    categoryId: 0,
     isActive: true,
   })
   const [creating, setCreating] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
+  const [categoryError, setCategoryError] = useState<string | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
 
   const [search, setSearch] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(5) // customizable
+  const [itemsPerPage, setItemsPerPage] = useState(5)
 
   // Fetch products
   const getProducts = useCallback(async () => {
@@ -87,13 +90,29 @@ const ProductsPage = () => {
     }
   }, [token])
 
+  // Fetch categories
+  const getCategories = useCallback(async () => {
+    try {
+      setLoading(true)
+      const response = await fetchCategories(token)
+      setCategories(response.data ?? [])
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }, [token])
+
   useEffect(() => {
-    if (token) getProducts()
-  }, [token, getProducts])
+    getProducts()
+    getCategories()
+  }, [token, getProducts, getCategories])
 
   // Input changes
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target
     setFormData((prev) => ({
@@ -103,6 +122,9 @@ const ProductsPage = () => {
           ? Number(value)
           : value,
     }))
+    if (name === 'categoryId' && Number(value) !== 0) {
+      setCategoryError(null)
+    }
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,8 +139,16 @@ const ProductsPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!token) return
+
+    // ✅ Category validation
+    if (!formData.categoryId || formData.categoryId === 0) {
+      setCategoryError('Category is required')
+      return
+    }
+
     try {
       setCreating(true)
+      setFormError(null)
       await createProductWithFile(token, formData)
       setShowForm(false)
       setPreview(null)
@@ -127,7 +157,7 @@ const ProductsPage = () => {
         description: '',
         price: 0,
         stock: 0,
-        categoryId: 1,
+        categoryId: 0,
         isActive: true,
       })
       getProducts()
@@ -151,6 +181,11 @@ const ProductsPage = () => {
     currentPage * itemsPerPage
   )
 
+  const getCategoryName = (id: number) => {
+    const category = categories.find((c) => c.id === id)
+    return category ? category.name : 'Unknown'
+  }
+
   return (
     <section className="p-4">
       <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
@@ -162,7 +197,7 @@ const ProductsPage = () => {
             value={search}
             onChange={(e) => {
               setSearch(e.target.value)
-              setCurrentPage(1) // reset page when searching
+              setCurrentPage(1)
             }}
             className="border px-3 py-2 rounded"
           />
@@ -208,10 +243,12 @@ const ProductsPage = () => {
                 <td className="px-4 py-2 border">{product.name}</td>
                 <td className="px-4 py-2 border">{product.description}</td>
                 <td className="px-4 py-2 border">
-                  ${product.price.toFixed(2)}
+                  ৳{product.price.toFixed(2)}
                 </td>
                 <td className="px-4 py-2 border">{product.stock}</td>
-                <td className="px-4 py-2 border">{product.categoryId}</td>
+                <td className="px-4 py-2 border">
+                  {getCategoryName(product.categoryId)}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -334,17 +371,28 @@ const ProductsPage = () => {
 
               <div>
                 <label htmlFor="categoryId" className="block mb-1 font-medium">
-                  Category ID
+                  Category
                 </label>
-                <input
-                  type="number"
+                <select
                   id="categoryId"
                   name="categoryId"
                   value={formData.categoryId}
                   onChange={handleInputChange}
                   required
-                  className="w-full border px-3 py-2 rounded"
-                />
+                  className={`w-full border px-3 py-2 rounded ${
+                    categoryError ? 'border-red-500' : ''
+                  }`}
+                >
+                  <option value={0}>Select Category</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+                {categoryError && (
+                  <p className="text-red-500 text-sm mt-1">{categoryError}</p>
+                )}
               </div>
 
               <div>
@@ -378,6 +426,7 @@ const ProductsPage = () => {
                   onClick={() => {
                     setShowForm(false)
                     setPreview(null)
+                    setCategoryError(null)
                   }}
                   className="px-4 py-2 border rounded hover:bg-gray-100"
                 >

@@ -106,6 +106,15 @@ export type CreateProduct = {
 };
 
 
+export type GetCategory = {
+  id: number
+  name: string
+}
+
+// Example: array of categories
+export type CategoriesResponse = GetCategory[]
+
+
 
 
 

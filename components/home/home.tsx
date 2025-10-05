@@ -40,6 +40,7 @@
 //   const [isLoggedIn, setIsLoggedIn] = useState(false)
 //   const [currentUser, setCurrentUser] = useState('')
 //   const [roleId, setRoleId] = useState<number | null>(null)
+//   const [savedRoleId, setSavedRoleId] = useState<number | null>(null) // ✅ safe storage for roleId
 
 //   const [isLoginOpen, setIsLoginOpen] = useState(false)
 //   const [isRegisterOpen, setIsRegisterOpen] = useState(false)
@@ -112,20 +113,28 @@
 //   const handleLogin = (user: UserType) => {
 //     setIsLoggedIn(true)
 //     setCurrentUser(user.username)
-//     setRoleId(user.roleId ?? 0) // fallback if roleId missing
-
-//     // Save user info to localStorage
+//     setRoleId(user.roleId ?? 0)
 //     localStorage.setItem('currentUser', JSON.stringify(user))
+//     localStorage.setItem('roleId', String(user.roleId ?? 0))
+//     setSavedRoleId(user.roleId ?? 0)
 //   }
 
 //   // ✅ Restore login state on mount
 //   useEffect(() => {
-//     const savedUser = localStorage.getItem('currentUser')
-//     if (savedUser) {
-//       const parsedUser: UserType = JSON.parse(savedUser)
-//       setIsLoggedIn(true)
-//       setCurrentUser(parsedUser.username)
-//       setRoleId(parsedUser.roleId ?? 0)
+//     if (typeof window !== 'undefined') {
+//       const savedUser = localStorage.getItem('currentUser')
+//       const storedRoleId = localStorage.getItem('roleId')
+
+//       if (savedUser) {
+//         const parsedUser: UserType = JSON.parse(savedUser)
+//         setIsLoggedIn(true)
+//         setCurrentUser(parsedUser.username)
+//         setRoleId(parsedUser.roleId ?? 0)
+//       }
+
+//       if (storedRoleId) {
+//         setSavedRoleId(parseInt(storedRoleId))
+//       }
 //     }
 //   }, [])
 
@@ -133,8 +142,10 @@
 //     setIsLoggedIn(false)
 //     setCurrentUser('')
 //     setRoleId(null)
+//     setSavedRoleId(null)
 //     localStorage.removeItem('authToken')
 //     localStorage.removeItem('currentUser')
+//     localStorage.removeItem('roleId')
 //   }
 
 //   const handleOrderComplete = () => {
@@ -158,11 +169,7 @@
 //         handleLogout={handleLogout}
 //         setIsCartOpen={setIsCartOpen}
 //         getTotalItems={getTotalItems}
-//         roleId={
-//           localStorage.getItem('roleId')
-//             ? parseInt(localStorage.getItem('roleId') as string)
-//             : roleId
-//         }
+//         roleId={savedRoleId ?? roleId} // ✅ safe use of roleId
 //       />
 
 //       {/* Hero Slider */}
@@ -373,9 +380,12 @@
 // }
 
 
+
+
+
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { ShoppingCart, Plus, Minus, X } from 'lucide-react'
 import Image from 'next/image'
@@ -384,69 +394,84 @@ import SignIn, { UserType } from './login-form'
 import RegisterForm from './register-form'
 import CheckoutForm from './checkout-form'
 import HeroSlider from './hero-slider'
-import { products } from '@/data/products'
 import Footer from '../shared/footer'
 import ProductCard from '../product/product-card'
 import ProductDetails from '../product/product-details'
-import Navbar from '../shared/navbar' // ✅ Import Navbar properly
-
-interface Product {
-  id: number
-  name: string
-  price: number
-  originalPrice?: number
-  image: string
-  category: string
-  rating: number
-  inStock: boolean
-  description?: string
-  features?: string[]
-  nutritionalInfo?: string
-}
-
-interface CartItem extends Product {
-  quantity: number
-}
+import Navbar from '../shared/navbar'
+import { fetchProducts } from '@/api/product-api'
+import { fetchCategories } from '@/api/categories-api'
+import { useAtom } from 'jotai'
+import { tokenAtom, useInitializeUser } from '@/utils/user'
+import { GetProduct, GetCategory } from '@/utils/type'
 
 export default function Home() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
+  useInitializeUser()
+  const [token] = useAtom(tokenAtom)
+  const [products, setProducts] = useState<GetProduct[]>([])
+  const [categories, setCategories] = useState<GetCategory[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const [cartItems, setCartItems] = useState<any[]>([])
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [currentUser, setCurrentUser] = useState('')
   const [roleId, setRoleId] = useState<number | null>(null)
-  const [savedRoleId, setSavedRoleId] = useState<number | null>(null) // ✅ safe storage for roleId
+  const [savedRoleId, setSavedRoleId] = useState<number | null>(null)
 
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [isRegisterOpen, setIsRegisterOpen] = useState(false)
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<GetProduct | null>(null)
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
 
-  const categories = [
-    'Poultry & Meat',
-    'New Arrivals',
-    'Best Selling',
-    'Daily Needs',
-    'Signature Series',
-    'Pickles & Chutney',
-  ]
+  // ✅ Fetch categories
+  const getCategories = useCallback(async () => {
+    try {
+      const res = await fetchCategories(token)
+      setCategories(res.data ?? [])
+    } catch (err) {
+      console.error(err)
+      setError('Failed to load categories')
+    }
+  }, [token])
+
+  // ✅ Fetch products
+  const getProducts = useCallback(async () => {
+    try {
+      const res = await fetchProducts(token)
+      setProducts(res.data ?? [])
+    } catch (err) {
+      console.error(err)
+      setError('Failed to load products')
+    } finally {
+      setLoading(false)
+    }
+  }, [token])
+
+  useEffect(() => {
+    getCategories()
+    getProducts()
+  }, [getCategories, getProducts])
 
   const filteredProducts = products.filter(
     (product) =>
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchQuery.toLowerCase())
+      categories
+        .find((cat) => cat.id === product.categoryId)
+        ?.name.toLowerCase()
+        .includes(searchQuery.toLowerCase())
   )
 
-  const addToCart = (product: Product) => {
+  // ✅ Cart logic
+  const addToCart = (product: GetProduct) => {
     setCartItems((prev) => {
-      const existingItem = prev.find((item) => item.id === product.id)
-      if (existingItem) {
+      const existing = prev.find((item) => item.id === product.id)
+      if (existing) {
         return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         )
       }
       return [...prev, { ...product, quantity: 1 }]
@@ -454,7 +479,7 @@ export default function Home() {
   }
 
   const updateQuantity = (id: number, quantity: number) => {
-    if (quantity === 0) {
+    if (quantity <= 0) {
       setCartItems((prev) => prev.filter((item) => item.id !== id))
     } else {
       setCartItems((prev) =>
@@ -464,17 +489,14 @@ export default function Home() {
   }
 
   const getTotalPrice = () => {
-    return cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    )
+    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
   }
 
   const getTotalItems = () => {
     return cartItems.reduce((total, item) => total + item.quantity, 0)
   }
 
-  const openProductModal = (product: Product) => {
+  const openProductModal = (product: GetProduct) => {
     setSelectedProduct(product)
     setIsProductModalOpen(true)
   }
@@ -494,7 +516,7 @@ export default function Home() {
     setSavedRoleId(user.roleId ?? 0)
   }
 
-  // ✅ Restore login state on mount
+  // ✅ Restore login state
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedUser = localStorage.getItem('currentUser')
@@ -525,10 +547,11 @@ export default function Home() {
 
   const handleOrderComplete = () => {
     setCartItems([])
-    alert(
-      'Order placed successfully! You will receive a confirmation call shortly.'
-    )
+    alert('Order placed successfully! You will receive a confirmation call shortly.')
   }
+
+  if (loading) return <p className="text-center mt-10">Loading...</p>
+  if (error) return <p className="text-center text-red-500">{error}</p>
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -544,7 +567,7 @@ export default function Home() {
         handleLogout={handleLogout}
         setIsCartOpen={setIsCartOpen}
         getTotalItems={getTotalItems}
-        roleId={savedRoleId ?? roleId} // ✅ safe use of roleId
+        roleId={savedRoleId ?? roleId}
       />
 
       {/* Hero Slider */}
@@ -559,8 +582,13 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
               <ProductCard
-                key={product.id}
-                product={product}
+                key={product.categoryId}
+                product={{
+                  ...product,
+                  url: product.url.startsWith('http')
+                    ? product.url
+                    : `http://localhost:4000/${product.url}`,
+                }}
                 onProductClick={openProductModal}
                 onAddToCart={addToCart}
               />
@@ -572,36 +600,51 @@ export default function Home() {
       {/* Product Categories */}
       {!searchQuery && (
         <main className="container mx-auto px-4 py-8">
-          {categories.map((category) => (
-            <section
-              key={category}
-              id={category.toLowerCase().replace(/\s+/g, '-')}
-              className="mb-12"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">{category}</h2>
-                <Button
-                  variant="outline"
-                  className="text-green-600 border-green-600 hover:bg-green-600 hover:text-white bg-transparent"
-                >
-                  View All
-                </Button>
-              </div>
+          {categories.map((category) => {
+            const categoryProducts = products.filter(
+              (product) => product.categoryId === category.id
+            )
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {products
-                  .filter((product) => product.category === category)
-                  .map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onProductClick={openProductModal}
-                      onAddToCart={addToCart}
-                    />
-                  ))}
-              </div>
-            </section>
-          ))}
+            return (
+              <section
+                key={category.id}
+                id={category.name.toLowerCase().replace(/\s+/g, '-')}
+                className="mb-12"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    {category.name}
+                  </h2>
+                  <Button
+                    variant="outline"
+                    className="text-green-600 border-green-600 hover:bg-green-600 hover:text-white bg-transparent"
+                  >
+                    View All
+                  </Button>
+                </div>
+
+                {categoryProducts.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {categoryProducts.map((product:GetProduct) => (
+                      <ProductCard
+                        key={product.id}
+                        product={{
+                          ...product,
+                          url: product.url.startsWith('http')
+                            ? product.url
+                            : `http://localhost:4000/${product.url}`,
+                        }}
+                        onProductClick={openProductModal}
+                        onAddToCart={addToCart}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No products found in this category.</p>
+                )}
+              </section>
+            )
+          })}
         </main>
       )}
 
@@ -650,7 +693,11 @@ export default function Home() {
                       <Image
                         height={64}
                         width={64}
-                        src={item.image || '/placeholder.svg'}
+                        src={
+                          item.url?.startsWith('http')
+                            ? item.url
+                            : `http://localhost:4000/${item.url}`
+                        }
                         alt={item.name}
                         className="w-16 h-16 object-cover rounded"
                       />

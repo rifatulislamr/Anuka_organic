@@ -5,20 +5,20 @@ import { Heart, Share2, ShoppingCart, Star, ArrowLeft } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { type Product } from "@/data/products"
+import { GetProduct } from "@/utils/type"
 
 interface ProductDetailsProps {
-  product: Product
+  product: GetProduct
    isOpen: boolean
    onClose: () => void
-   onAddToCart: (product: Product) => void
+   onAddToCart: (product: GetProduct) => void
 }
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
   const router = useRouter()
   const [quantity, setQuantity] = useState(1)
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: GetProduct) => {
     alert(`Added ${product.name} to cart!`)
   }
 
@@ -51,16 +51,16 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               <Image
                 height={600}
                 width={600}
-                src={product.image || "/placeholder.svg"}
+                src={product.url || "/placeholder.svg"}
                 alt={product.name}
                 className="w-full h-auto max-h-[500px] object-contain"
                 priority
               />
-              {product.originalPrice && (
+              {/* {product.price && (
                 <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1.5 rounded text-sm font-medium">
-                  {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+                  {Math.round(((product.price - product.price) / product.price) * 100)}% OFF
                 </div>
-              )}
+              )} */}
             </div>
           </div>
 
@@ -70,7 +70,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-3">{product.name}</h1>
               <div className="flex flex-wrap items-center gap-3">
-                <div className="flex items-center">
+                {/* <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
@@ -80,13 +80,13 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     />
                   ))}
                   <span className="text-gray-600 ml-2">({product.rating})</span>
-                </div>
+                </div> */}
                 <span
                   className={`px-3 py-1 rounded-full text-sm ${
-                    product.inStock ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                    product.stock ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
                   }`}
                 >
-                  {product.inStock ? "In Stock" : "Out of Stock"}
+                  {product.stock ? "In Stock" : "Out of Stock"}
                 </span>
               </div>
             </div>
@@ -94,16 +94,16 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             {/* Price */}
             <div className="flex items-center gap-4">
               <span className="text-3xl font-bold text-green-600">৳{product.price}</span>
-              {product.originalPrice && (
-                <span className="text-xl text-gray-500 line-through">৳{product.originalPrice}</span>
-              )}
+              {/* {product.price && (
+                <span className="text-xl text-gray-500 line-through">৳{product.price}</span>
+              )} */}
             </div>
 
             {/* Description */}
             <p className="text-gray-700 leading-relaxed text-base">{product.description}</p>
 
             {/* Features */}
-            {product.features && (
+            {/* {product.features && (
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">Key Features</h3>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -115,15 +115,15 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                   ))}
                 </ul>
               </div>
-            )}
+            )} */}
 
             {/* Nutrition */}
-            {product.nutritionalInfo && (
+            {/* {product.nutritionalInfo && (
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">Nutritional Information</h3>
                 <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">{product.nutritionalInfo}</p>
               </div>
-            )}
+            )} */}
 
             {/* Quantity Selector */}
             <div className="flex items-center gap-4">
@@ -151,7 +151,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button
                 onClick={() => addToCart(product)}
-                disabled={!product.inStock}
+                disabled={!product.stock}
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-300 h-12"
               >
                 <ShoppingCart className="w-4 h-4 mr-2" />
@@ -178,7 +178,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             {/* Extra Info */}
             <div className="border-t border-gray-200 pt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-600">
               <div>
-                <span className="font-medium text-gray-900">Category:</span> {product.category}
+                <span className="font-medium text-gray-900">Category:</span> {product.categoryId}
               </div>
               <div>
                 <span className="font-medium text-gray-900">Product ID:</span> #{product.id}
