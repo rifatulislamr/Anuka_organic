@@ -5,7 +5,7 @@ import { GetCategory } from '@/utils/type'
 
 
 // Create a new category
-export async function createCategory(token: string, data: { name: string }) {
+export async function createCategory(token: string, data: {  name: string }) {
   return fetchApi<GetCategory>({
     url: 'api/categories/create',
     method: 'POST',

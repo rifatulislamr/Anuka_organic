@@ -114,13 +114,65 @@ export type GetCategory = {
 // Example: array of categories
 export type CategoriesResponse = GetCategory[]
 
+//get cart item type
+export type GetCart = {
+  cartId: number
+  productId: number
+  name: string
+  price: number
+  createdAt: string
+}
+
+//get all orders type
+export type GetAllOrdersType = {
+  id: number
+  userId: number
+  productId: number
+  productQuantity: number
+  status: string
+  totalAmount: number
+  createdAt: string
+}
+
+export type userUpdateType = {
+  username?: string;
+      email?: string;
+      roleId?: number;
+      active?: boolean;
+      fullName?: string;
+      phone?: string;
+      street?: string;
+      city?: string;
+      state?: string;
+      country?: string;
+    }
 
 
 
 
+export interface OrderItem {
+  productId: number
+  qty: number
+}
 
+export interface CreateOrderRequest {
+  userId: number
+  items: OrderItem[]
+}
 
-
+export interface OrderResponse {
+  id: number
+  userId: number
+  totalAmount: number
+  status: string
+  createdAt: string
+  items: {
+    productId: number
+    qty: number
+    price?: number
+    name?: string
+  }[]
+}
 
 
 

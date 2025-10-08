@@ -1,214 +1,11 @@
-// 'use client'
-
-// import { getUsers } from '@/api/users-api'
-// import { User } from '@/utils/type'
-// import { tokenAtom, useInitializeUser } from '@/utils/user'
-// import { useAtom } from 'jotai'
-// import { useRouter } from 'next/navigation'
-// import React, { useState, useEffect } from 'react'
-
-// type AdminPage =
-//   | 'users'
-//   | 'roles'
-//   | 'permissions'
-//   | 'categories'
-//   | 'products'
-//   | 'orders'
-//   | 'payments'
-//   | 'reviews'
-//   | 'carts'
-
-// const AdminDashboard = () => {
-//   useInitializeUser()
-
-//   const [token] = useAtom(tokenAtom)
-//   const router = useRouter()
-//   const [activePage, setActivePage] = useState<AdminPage>('users')
-//   const [users, setUsers] = useState<User[]>([])
-//   const [loading, setLoading] = useState(true)
-
-//   const menuItems: { key: AdminPage; label: string }[] = [
-//     { key: 'users', label: 'Users' },
-//     { key: 'roles', label: 'Roles' },
-//     { key: 'permissions', label: 'Permissions' },
-//     { key: 'categories', label: 'Categories' },
-//     { key: 'products', label: 'Products' },
-//     { key: 'orders', label: 'Orders' },
-//     { key: 'payments', label: 'Payments' },
-//     { key: 'reviews', label: 'Reviews' },
-//     { key: 'carts', label: 'Carts' },
-//   ]
-
-//   useEffect(() => {
-//     async function loadUsers() {
-//       try {
-//         const data = await getUsers(token)
-//         setUsers(data.data || [])
-//         console.log('Fetched users:', data.data || [])
-//       } catch (error) {
-//         console.error('Failed to fetch users:', error)
-//       } finally {
-//         setLoading(false)
-//       }
-//     }
-//     loadUsers()
-//   }, [token])
-
-//   return (
-//     <div className="flex min-h-screen bg-gray-100">
-//       {/* Sidebar */}
-//       <aside className="w-64 bg-white shadow-md p-5 flex flex-col">
-//         <h2 className="text-xl font-bold text-blue-600 mb-6">
-//           Admin Dashboard
-//         </h2>
-
-//         <nav className="flex flex-col space-y-2">
-//           {menuItems.map((item) => (
-//             <button
-//               key={item.key}
-//               onClick={() => setActivePage(item.key)}
-//               className={`px-4 py-2 rounded-md text-left transition-colors ${
-//                 activePage === item.key
-//                   ? 'bg-blue-600 text-white'
-//                   : 'text-gray-700 hover:bg-blue-50'
-//               }`}
-//             >
-//               {item.label}
-//             </button>
-//           ))}
-//         </nav>
-//       </aside>
-
-//       {/* Main Content */}
-//       <main className="flex-1 p-8">
-//         {activePage === 'users' && (
-//           <section>
-//             <h1 className="text-2xl font-semibold mb-4">Manage Users</h1>
-//             <div className="bg-white rounded-lg shadow p-6">
-//               {loading ? (
-//                 <p>Loading users...</p>
-//               ) : (
-//                 <table className="w-full text-left border-collapse mt-4">
-//                   <thead>
-//                     <tr>
-//                       <th className="border-b p-3">Username</th>
-//                       <th className="border-b p-3">Email</th>
-//                       <th className="border-b p-3">Role ID</th>
-//                     </tr>
-//                   </thead>
-//                   <tbody>
-//                     {users.map((user) => (
-//                       <tr key={user.userId} className="hover:bg-gray-50">
-//                         <td className="p-3">{user.username}</td>
-//                         <td className="p-3">{user.email}</td>
-//                         <td
-//                           className={`p-3 capitalize ${
-//                             user.roleName?.toLowerCase() === 'admin'
-//                               ? 'text-green-600 font-semibold'
-//                               : user.roleName?.toLowerCase() === 'user'
-//                                 ? 'text-blue-600 font-semibold'
-//                                 : 'text-gray-700'
-//                           }`}
-//                         >
-//                           {user.roleName}
-//                         </td>
-//                         <td className="p-3">{user.fullName}</td>
-//                       </tr>
-//                     ))}
-//                   </tbody>
-//                 </table>
-//               )}
-//             </div>
-//           </section>
-//         )}
-
-//         {/* Other sections unchanged */}
-//         {activePage === 'roles' && (
-//           <section>
-//             <h1 className="text-2xl font-semibold mb-4">Manage Roles</h1>
-//             <div className="bg-white rounded-lg shadow p-6">
-//               <p>Define and assign roles to users.</p>
-//             </div>
-//           </section>
-//         )}
-
-//         {activePage === 'permissions' && (
-//           <section>
-//             <h1 className="text-2xl font-semibold mb-4">Manage Permissions</h1>
-//             <div className="bg-white rounded-lg shadow p-6">
-//               <p>Set permissions for each role.</p>
-//             </div>
-//           </section>
-//         )}
-
-//         {activePage === 'categories' && (
-//           <section>
-//             <h1 className="text-2xl font-semibold mb-4">Manage Categories</h1>
-//             <div className="bg-white rounded-lg shadow p-6">
-//               <p>Add, edit, or delete product categories.</p>
-//             </div>
-//           </section>
-//         )}
-
-//         {activePage === 'products' && (
-//           <section>
-//             <h1 className="text-2xl font-semibold mb-4">Manage Products</h1>
-//             <div className="bg-white rounded-lg shadow p-6">
-//               <p>Add, edit, or remove products.</p>
-//             </div>
-//           </section>
-//         )}
-
-//         {activePage === 'orders' && (
-//           <section>
-//             <h1 className="text-2xl font-semibold mb-4">Manage Orders</h1>
-//             <div className="bg-white rounded-lg shadow p-6">
-//               <p>Track and update customer orders.</p>
-//             </div>
-//           </section>
-//         )}
-
-//         {activePage === 'payments' && (
-//           <section>
-//             <h1 className="text-2xl font-semibold mb-4">Manage Payments</h1>
-//             <div className="bg-white rounded-lg shadow p-6">
-//               <p>View and verify payments.</p>
-//             </div>
-//           </section>
-//         )}
-
-//         {activePage === 'reviews' && (
-//           <section>
-//             <h1 className="text-2xl font-semibold mb-4">Manage Reviews</h1>
-//             <div className="bg-white rounded-lg shadow p-6">
-//               <p>Review user feedback on products.</p>
-//             </div>
-//           </section>
-//         )}
-
-//         {activePage === 'carts' && (
-//           <section>
-//             <h1 className="text-2xl font-semibold mb-4">Manage Carts</h1>
-//             <div className="bg-white rounded-lg shadow p-6">
-//               <p>Check pending user carts.</p>
-//             </div>
-//           </section>
-//         )}
-//       </main>
-//     </div>
-//   )
-// }
-
-// export default AdminDashboard
-
-
 'use client'
 
 import React, { useState } from 'react'
 import { useAtom } from 'jotai'
+import { useRouter } from 'next/navigation'
 import { tokenAtom, useInitializeUser } from '@/utils/user'
 
-// ✅ Import all page components
+// Import all page components
 import UsersPage from './pages/users-page'
 import RolesPage from './pages/roles-page'
 import PermissionsPage from './pages/permissions-page'
@@ -218,6 +15,15 @@ import OrdersPage from './pages/orders-page'
 import PaymentsPage from './pages/payments-page'
 import ReviewsPage from './pages/reviews-page'
 import CartsPage from './pages/carts-page'
+import { Button } from '@/components/ui/button'
+import {
+  FaUser,
+  FaBoxOpen,
+  FaTags,
+  FaShoppingCart,
+  FaChartLine,
+  FaHome,
+} from 'react-icons/fa'
 
 type AdminPage =
   | 'users'
@@ -234,18 +40,15 @@ const AdminDashboard = () => {
   useInitializeUser()
   const [token] = useAtom(tokenAtom)
   const [activePage, setActivePage] = useState<AdminPage>('users')
+  const router = useRouter()
 
-  const menuItems: { key: AdminPage; label: string }[] = [
-    { key: 'users', label: 'Users' },
-    { key: 'roles', label: 'Roles' },
-    { key: 'permissions', label: 'Permissions' },
-    { key: 'categories', label: 'Categories' },
-    { key: 'products', label: 'Products' },
-    { key: 'orders', label: 'Orders' },
-    { key: 'payments', label: 'Payments' },
-    { key: 'reviews', label: 'Reviews' },
-    { key: 'carts', label: 'Carts' },
-  ]
+  const menuItems: { key: AdminPage; label: string; icon: React.ReactNode }[] =
+    [
+      { key: 'users', label: 'Users', icon: <FaUser /> },
+      { key: 'categories', label: 'Categories', icon: <FaTags /> },
+      { key: 'products', label: 'Products', icon: <FaBoxOpen /> },
+      { key: 'orders', label: 'Orders', icon: <FaShoppingCart /> },
+    ]
 
   const renderPage = () => {
     switch (activePage) {
@@ -273,30 +76,54 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md p-5 flex flex-col">
-        <h2 className="text-xl font-bold text-blue-600 mb-6">Admin Dashboard</h2>
+      <aside className="w-64 bg-gradient-to-b from-blue-700 to-blue-900 text-white flex flex-col fixed top-0 left-0 bottom-0 shadow-xl z-10">
+        {/* Header Section */}
+        <div className="flex items-center justify-between px-5 py-4 bg-blue-800 shadow-md">
+          <h2 className="text-lg font-semibold tracking-wide">Admin Panel</h2>
+          <Button
+            onClick={() => router.push('/')}
+            className="flex items-center gap-1 bg-white text-blue-700 font-medium px-2 py-1 rounded-md hover:bg-gray-100 transition-all text-sm"
+          >
+            <FaHome size={14} />
+            Home
+          </Button>
+        </div>
 
-        <nav className="flex flex-col space-y-2">
+        {/* Menu Items */}
+        <nav className="flex-1 overflow-y-auto p-4 space-y-2 scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-blue-800">
           {menuItems.map((item) => (
             <button
               key={item.key}
               onClick={() => setActivePage(item.key)}
-              className={`px-4 py-2 rounded-md text-left transition-colors ${
+              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-sm font-medium ${
                 activePage === item.key
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-700 hover:bg-blue-50'
+                  ? 'bg-white text-blue-700 shadow-md scale-[1.02]'
+                  : 'text-blue-100 hover:bg-blue-800 hover:text-white'
               }`}
             >
-              {item.label}
+              <span className="text-lg">{item.icon}</span>
+              <span>{item.label}</span>
             </button>
           ))}
         </nav>
+
+        {/* Footer Section */}
+        <div className="p-4 border-t border-blue-700 text-center text-sm text-blue-200">
+          <p className="text-xs">
+            © {new Date().getFullYear()} Admin Dashboard
+          </p>
+          <p className="text-[11px] opacity-80">Built with ❤️ by Rifat</p>
+        </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-8">{renderPage()}</main>
+      <main className="flex-1 ml-64 p-8 overflow-y-auto max-h-screen">
+        <div className="bg-white shadow-md rounded-xl p-6 min-h-[80vh]">
+          {renderPage()}
+        </div>
+      </main>
     </div>
   )
 }

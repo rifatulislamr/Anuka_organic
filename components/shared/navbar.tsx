@@ -1,6 +1,8 @@
+
+
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -23,6 +25,12 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
+import { fetchProducts } from '@/api/product-api'
+import { useAtom } from 'jotai'
+import { tokenAtom } from '@/utils/user'
+import { GetCategory, GetProduct } from '@/utils/type'
+import { fetchCategories } from '@/api/categories-api'
+
 interface NavbarProps {
   searchQuery: string
   setSearchQuery: (query: string) => void
@@ -35,68 +43,6 @@ interface NavbarProps {
   setIsCartOpen: (open: boolean) => void
   getTotalItems: () => number
   roleId: number | null
-}
-
-const categories = [
-  'Fresh Produce',
-  'Dairy Products',
-  'Meat & Poultry',
-  'Spices & Condiments',
-  'Grains & Cereals',
-  'Beverages',
-  'Snacks & Sweets',
-  'Health & Wellness',
-]
-
-const categorySubmenus = {
-  'Fresh Produce': [
-    { name: 'Organic Vegetables', count: 45 },
-    { name: 'Fresh Fruits', count: 32 },
-    { name: 'Leafy Greens', count: 18 },
-    { name: 'Herbs', count: 12 },
-  ],
-  'Dairy Products': [
-    { name: 'Organic Milk', count: 8 },
-    { name: 'Cheese', count: 15 },
-    { name: 'Yogurt', count: 12 },
-    { name: 'Butter & Ghee', count: 6 },
-  ],
-  'Meat & Poultry': [
-    { name: 'Organic Chicken', count: 12 },
-    { name: 'Free-Range Eggs', count: 8 },
-    { name: 'Grass-Fed Beef', count: 6 },
-    { name: 'Wild-Caught Fish', count: 10 },
-  ],
-  'Spices & Condiments': [
-    { name: 'Whole Spices', count: 25 },
-    { name: 'Ground Spices', count: 30 },
-    { name: 'Organic Sauces', count: 15 },
-    { name: 'Natural Sweeteners', count: 8 },
-  ],
-  'Grains & Cereals': [
-    { name: 'Organic Rice', count: 12 },
-    { name: 'Ancient Grains', count: 8 },
-    { name: 'Breakfast Cereals', count: 15 },
-    { name: 'Flour & Baking', count: 10 },
-  ],
-  Beverages: [
-    { name: 'Herbal Teas', count: 20 },
-    { name: 'Fresh Juices', count: 12 },
-    { name: 'Organic Coffee', count: 8 },
-    { name: 'Natural Drinks', count: 15 },
-  ],
-  'Snacks & Sweets': [
-    { name: 'Healthy Snacks', count: 18 },
-    { name: 'Organic Sweets', count: 12 },
-    { name: 'Nuts & Seeds', count: 15 },
-    { name: 'Dried Fruits', count: 10 },
-  ],
-  'Health & Wellness': [
-    { name: 'Supplements', count: 25 },
-    { name: 'Superfoods', count: 18 },
-    { name: 'Natural Remedies', count: 12 },
-    { name: 'Essential Oils', count: 8 },
-  ],
 }
 
 export default function Navbar({
@@ -115,7 +61,52 @@ export default function Navbar({
   const [isBrowseOpen, setIsBrowseOpen] = useState(false)
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [open, setOpen] = useState(false)
+  const [categories, setCategories] = useState<GetCategory[]>([])
+  const [products, setProducts] = useState<GetProduct[]>([])
+  const [categorySubmenus, setCategorySubmenus] = useState<
+    Record<string, { name: string; count: number }[]>
+  >({})
+  const [token] = useAtom(tokenAtom)
   const router = useRouter()
+
+  useEffect(() => {
+    const loadData = async () => {
+      if (!token) return
+      try {
+        const [catRes, prodRes] = await Promise.all([
+          fetchCategories(token),
+          fetchProducts(token),
+        ])
+
+        if (catRes?.data) setCategories(catRes.data)
+        if (prodRes?.data) setProducts(prodRes.data)
+
+        // Group products by category
+        if (catRes?.data && prodRes?.data) {
+  const categoryMap: Record<string, { name: string; count: number }[]> = {}
+
+  catRes.data.forEach((cat: GetCategory) => {
+    // Use optional chaining and fallback to empty array
+    const subProducts = prodRes.data?.filter(
+      (p: GetProduct) => p.categoryId === cat.id
+    ) || []
+
+    categoryMap[cat.name] = subProducts.map((sp: GetProduct) => ({
+      name: sp.name,
+      count: sp.stock || 0,
+    }))
+  })
+
+  setCategorySubmenus(categoryMap)
+}
+
+      } catch (error) {
+        console.error('Failed to load categories/products:', error)
+      }
+    }
+
+    loadData()
+  }, [token])
 
   return (
     <>
@@ -166,29 +157,31 @@ export default function Navbar({
                   >
                     {categories.map((category) => (
                       <div
-                        key={category}
+                        key={category.id}
                         className="relative"
-                        onMouseEnter={() => setHoveredCategory(category)}
+                        onMouseEnter={() =>
+                          setHoveredCategory(category.name)
+                        }
                       >
                         <div className="flex items-center justify-between px-4 py-3 hover:bg-green-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0">
                           <span className="text-gray-700 hover:text-green-600 font-medium">
-                            {category}
+                            {category.name}
                           </span>
                           <ChevronRight className="w-4 h-4 text-gray-400" />
                         </div>
 
                         {/* Subcategories Side Menu */}
-                        {hoveredCategory === category && (
+                        {hoveredCategory === category.name && (
                           <div className="absolute left-full top-0 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 ml-1">
                             <div className="p-2">
                               <h4 className="text-sm font-semibold text-gray-800 px-3 py-2 border-b border-gray-100 mb-2">
-                                {category}
+                                {category.name}
                               </h4>
                               {categorySubmenus[
-                                category as keyof typeof categorySubmenus
-                              ]?.map((subcategory) => (
+                                category.name
+                              ]?.map((subcategory, index) => (
                                 <div
-                                  key={subcategory.name}
+                                  key={`${category.name}-${subcategory.name}-${index}`}
                                   className="flex items-center justify-between px-3 py-2 hover:bg-green-50 cursor-pointer transition-colors rounded"
                                 >
                                   <span className="text-gray-600 hover:text-green-600 text-sm">
@@ -231,77 +224,6 @@ export default function Navbar({
 
             {/* Right Actions */}
             <div className="flex items-center space-x-4">
-              {/* <DropdownMenu open={open} onOpenChange={setOpen}>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="flex items-center space-x-2 text-gray-600 hover:text-green-600 hover:bg-green-50 px-3 py-2 rounded-lg transition-all duration-200"
-                    onMouseEnter={() => setOpen(true)}
-                  >
-                    <User className="w-5 h-5" />
-                    {isLoggedIn && (
-                      <span className="hidden sm:block text-sm font-medium">
-                        Hi, {currentUser}
-                      </span>
-                    )}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  className="w-56 p-2 bg-white border border-gray-200 rounded-lg shadow-lg"
-                  align="end"
-                  onMouseEnter={() => setOpen(true)}
-                  onMouseLeave={() => setOpen(false)}
-                >
-                  {!isLoggedIn ? (
-                    <>
-                      <DropdownMenuItem
-                        onClick={() => setIsLoginOpen(true)}
-                        className="flex items-center space-x-2 px-3 py-2 hover:bg-green-50 rounded-md cursor-pointer transition-colors"
-                      >
-                        <User className="w-4 h-4 text-green-600" />
-                        <span className="text-gray-700">Log In</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => setIsRegisterOpen(true)}
-                        className="flex items-center space-x-2 px-3 py-2 hover:bg-green-50 rounded-md cursor-pointer transition-colors"
-                      >
-                        <User className="w-4 h-4 text-green-600" />
-                        <span className="text-gray-700">Register</span>
-                      </DropdownMenuItem>
-                    </>
-                  ) : (
-                    <>
-                      <div className="px-3 py-2 border-b border-gray-100 mb-2">
-                        <p className="text-sm font-medium text-gray-900">
-                          Welcome back!
-                        </p>
-                        <p className="text-xs text-gray-600">{currentUser}</p>
-                      </div>
-                      <DropdownMenuItem
-                        onClick={() => router.push('/orders')}
-                        className="flex items-center space-x-2 px-3 py-2 hover:bg-green-50 rounded-md cursor-pointer transition-colors"
-                      >
-                        <ShoppingCart className="w-4 h-4 text-green-600" />
-                        <span className="text-gray-700">My Orders</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => router.push('/profile')}
-                        className="flex items-center space-x-2 px-3 py-2 hover:bg-green-50 rounded-md cursor-pointer transition-colors"
-                      >
-                        <User className="w-4 h-4 text-green-600" />
-                        <span className="text-gray-700">My Profile</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={handleLogout}
-                        className="flex items-center space-x-2 px-3 py-2 hover:bg-red-50 rounded-md cursor-pointer transition-colors"
-                      >
-                        <LogOut className="w-4 h-4 text-red-600" />
-                        <span className="text-red-700">Logout</span>
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu> */}
               <DropdownMenu open={open} onOpenChange={setOpen}>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -350,7 +272,6 @@ export default function Navbar({
                         <p className="text-xs text-gray-600">{currentUser}</p>
                       </div>
 
-                      {/* If roleId = 1 → Admin Dashboard */}
                       {roleId === 1 && (
                         <DropdownMenuItem
                           onClick={() => router.push('/admin-dashboard')}
@@ -361,7 +282,6 @@ export default function Navbar({
                         </DropdownMenuItem>
                       )}
 
-                      {/* If roleId = 2 → User menu */}
                       {roleId === 2 && (
                         <DropdownMenuItem
                           onClick={() => router.push('/user-dashboard')}
@@ -372,7 +292,6 @@ export default function Navbar({
                         </DropdownMenuItem>
                       )}
 
-                      {/* Logout (for all logged-in users) */}
                       <DropdownMenuItem
                         onClick={handleLogout}
                         className="flex items-center space-x-2 px-3 py-2 hover:bg-red-50 rounded-md cursor-pointer transition-colors"
