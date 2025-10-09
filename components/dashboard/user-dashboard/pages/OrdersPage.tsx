@@ -111,7 +111,7 @@ const OrdersPage = () => {
                   >
                     {order.status}
                   </td>
-                  <td className="p-3">${order.totalAmount}</td>
+                  <td className="p-3">৳ {order.totalAmount}</td>
                 </tr>
               ))}
             </tbody>

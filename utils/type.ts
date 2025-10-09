@@ -151,6 +151,7 @@ export type GetAllOrdersType = {
   status: string
   totalAmount: number
   createdAt: string
+  userName:string
 }
 
 export type userUpdateType = {

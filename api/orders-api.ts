@@ -32,24 +32,24 @@ export async function updateOrderStatus(
 }
 
 
-// create a new order
-export async function createOrderApi(
-  token: string,
-  data: {
-    userId: number
-    items: { productId: number; qty: number }[]
-  }
-) {
-  return fetchApi<CreateOrderRequest[]>({
-    url: 'api/orders/create-orders',
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `${token}`,
-    },
-    body: data, // Send JSON object directly
-  })
-}
+// // create a new order
+// export async function createOrderApi(
+//   token: string,
+//   data: {
+//     userId: number
+//     items: { productId: number; qty: number }[]
+//   }
+// ) {
+//   return fetchApi<CreateOrderRequest[]>({
+//     url: 'api/orders/create-orders',
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       Authorization: `${token}`,
+//     },
+//     body: data, // Send JSON object directly
+//   })
+// }
 
 
 //get  product by users api
@@ -61,5 +61,45 @@ export async function fetchOrdersByUsers(token: string) {
       'Content-Type': 'application/json',
       Authorization: `${token}`,
     },
+  })
+}
+
+
+
+
+
+
+// order-api.ts
+
+interface CreateOrderResponse {
+  message: string
+  totalOrderAmount: number
+}
+
+interface OrderItem {
+  productId: number
+  qty: number
+}
+
+interface CreateOrderData {
+  userId: number
+  items: OrderItem[]
+}
+
+
+
+// Create a new order
+export async function createOrderApi(
+  token: string,
+  data: CreateOrderData
+) {
+  return fetchApi<CreateOrderResponse>({
+    url: 'api/orders/create-orders',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `${token}`,
+    },
+    body: data,
   })
 }
