@@ -1,395 +1,9 @@
-// // 'use client'
-
-// // import { useEffect, useState } from 'react'
-// // import { Button } from '@/components/ui/button'
-// // import { ShoppingCart, Plus, Minus, X } from 'lucide-react'
-// // import Image from 'next/image'
-
-// // import SignIn, { UserType } from './login-form'
-// // import RegisterForm from './register-form'
-// // import CheckoutForm from './checkout-form'
-// // import HeroSlider from './hero-slider'
-// // import { products } from '@/data/products'
-// // import Footer from '../shared/footer'
-// // import ProductCard from '../product/product-card'
-// // import ProductDetails from '../product/product-details'
-// // import Navbar from '../shared/navbar' // ✅ Import Navbar properly
-
-// // interface Product {
-// //   id: number
-// //   name: string
-// //   price: number
-// //   originalPrice?: number
-// //   image: string
-// //   category: string
-// //   rating: number
-// //   inStock: boolean
-// //   description?: string
-// //   features?: string[]
-// //   nutritionalInfo?: string
-// // }
-
-// // interface CartItem extends Product {
-// //   quantity: number
-// // }
-
-// // export default function Home() {
-// //   const [cartItems, setCartItems] = useState<CartItem[]>([])
-// //   const [isCartOpen, setIsCartOpen] = useState(false)
-// //   const [searchQuery, setSearchQuery] = useState('')
-// //   const [isLoggedIn, setIsLoggedIn] = useState(false)
-// //   const [currentUser, setCurrentUser] = useState('')
-// //   const [roleId, setRoleId] = useState<number | null>(null)
-// //   const [savedRoleId, setSavedRoleId] = useState<number | null>(null) // ✅ safe storage for roleId
-
-// //   const [isLoginOpen, setIsLoginOpen] = useState(false)
-// //   const [isRegisterOpen, setIsRegisterOpen] = useState(false)
-// //   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
-
-// //   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-// //   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
-
-// //   const categories = [
-// //     'Poultry & Meat',
-// //     'New Arrivals',
-// //     'Best Selling',
-// //     'Daily Needs',
-// //     'Signature Series',
-// //     'Pickles & Chutney',
-// //   ]
-
-// //   const filteredProducts = products.filter(
-// //     (product) =>
-// //       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-// //       product.category.toLowerCase().includes(searchQuery.toLowerCase())
-// //   )
-
-// //   const addToCart = (product: Product) => {
-// //     setCartItems((prev) => {
-// //       const existingItem = prev.find((item) => item.id === product.id)
-// //       if (existingItem) {
-// //         return prev.map((item) =>
-// //           item.id === product.id
-// //             ? { ...item, quantity: item.quantity + 1 }
-// //             : item
-// //         )
-// //       }
-// //       return [...prev, { ...product, quantity: 1 }]
-// //     })
-// //   }
-
-// //   const updateQuantity = (id: number, quantity: number) => {
-// //     if (quantity === 0) {
-// //       setCartItems((prev) => prev.filter((item) => item.id !== id))
-// //     } else {
-// //       setCartItems((prev) =>
-// //         prev.map((item) => (item.id === id ? { ...item, quantity } : item))
-// //       )
-// //     }
-// //   }
-
-// //   const getTotalPrice = () => {
-// //     return cartItems.reduce(
-// //       (total, item) => total + item.price * item.quantity,
-// //       0
-// //     )
-// //   }
-
-// //   const getTotalItems = () => {
-// //     return cartItems.reduce((total, item) => total + item.quantity, 0)
-// //   }
-
-// //   const openProductModal = (product: Product) => {
-// //     setSelectedProduct(product)
-// //     setIsProductModalOpen(true)
-// //   }
-
-// //   const closeProductModal = () => {
-// //     setIsProductModalOpen(false)
-// //     setSelectedProduct(null)
-// //   }
-
-// //   // ✅ handleLogin with persistence
-// //   const handleLogin = (user: UserType) => {
-// //     setIsLoggedIn(true)
-// //     setCurrentUser(user.username)
-// //     setRoleId(user.roleId ?? 0)
-// //     localStorage.setItem('currentUser', JSON.stringify(user))
-// //     localStorage.setItem('roleId', String(user.roleId ?? 0))
-// //     setSavedRoleId(user.roleId ?? 0)
-// //   }
-
-// //   // ✅ Restore login state on mount
-// //   useEffect(() => {
-// //     if (typeof window !== 'undefined') {
-// //       const savedUser = localStorage.getItem('currentUser')
-// //       const storedRoleId = localStorage.getItem('roleId')
-
-// //       if (savedUser) {
-// //         const parsedUser: UserType = JSON.parse(savedUser)
-// //         setIsLoggedIn(true)
-// //         setCurrentUser(parsedUser.username)
-// //         setRoleId(parsedUser.roleId ?? 0)
-// //       }
-
-// //       if (storedRoleId) {
-// //         setSavedRoleId(parseInt(storedRoleId))
-// //       }
-// //     }
-// //   }, [])
-
-// //   const handleLogout = () => {
-// //     setIsLoggedIn(false)
-// //     setCurrentUser('')
-// //     setRoleId(null)
-// //     setSavedRoleId(null)
-// //     localStorage.removeItem('authToken')
-// //     localStorage.removeItem('currentUser')
-// //     localStorage.removeItem('roleId')
-// //   }
-
-// //   const handleOrderComplete = () => {
-// //     setCartItems([])
-// //     alert(
-// //       'Order placed successfully! You will receive a confirmation call shortly.'
-// //     )
-// //   }
-
-// //   return (
-// //     <div className="min-h-screen bg-gray-50">
-// //       {/* Navbar */}
-// //       <Navbar
-// //         searchQuery={searchQuery}
-// //         setSearchQuery={setSearchQuery}
-// //         filteredProducts={filteredProducts}
-// //         isLoggedIn={isLoggedIn}
-// //         currentUser={currentUser}
-// //         setIsLoginOpen={setIsLoginOpen}
-// //         setIsRegisterOpen={setIsRegisterOpen}
-// //         handleLogout={handleLogout}
-// //         setIsCartOpen={setIsCartOpen}
-// //         getTotalItems={getTotalItems}
-// //         roleId={savedRoleId ?? roleId} // ✅ safe use of roleId
-// //       />
-
-// //       {/* Hero Slider */}
-// //       <HeroSlider />
-
-// //       {/* Search Results */}
-// //       {searchQuery && (
-// //         <section className="container mx-auto px-4 py-8">
-// //           <h2 className="text-2xl font-bold text-gray-900 mb-6">
-// //             Search Results for {searchQuery} ({filteredProducts.length} items)
-// //           </h2>
-// //           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-// //             {filteredProducts.map((product) => (
-// //               <ProductCard
-// //                 key={product.id}
-// //                 product={product}
-// //                 onProductClick={openProductModal}
-// //                 onAddToCart={addToCart}
-// //               />
-// //             ))}
-// //           </div>
-// //         </section>
-// //       )}
-
-// //       {/* Product Categories */}
-// //       {!searchQuery && (
-// //         <main className="container mx-auto px-4 py-8">
-// //           {categories.map((category) => (
-// //             <section
-// //               key={category}
-// //               id={category.toLowerCase().replace(/\s+/g, '-')}
-// //               className="mb-12"
-// //             >
-// //               <div className="flex items-center justify-between mb-6">
-// //                 <h2 className="text-2xl font-bold text-gray-900">{category}</h2>
-// //                 <Button
-// //                   variant="outline"
-// //                   className="text-green-600 border-green-600 hover:bg-green-600 hover:text-white bg-transparent"
-// //                 >
-// //                   View All
-// //                 </Button>
-// //               </div>
-
-// //               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-// //                 {products
-// //                   .filter((product) => product.category === category)
-// //                   .map((product) => (
-// //                     <ProductCard
-// //                       key={product.id}
-// //                       product={product}
-// //                       onProductClick={openProductModal}
-// //                       onAddToCart={addToCart}
-// //                     />
-// //                   ))}
-// //               </div>
-// //             </section>
-// //           ))}
-// //         </main>
-// //       )}
-
-// //       {/* Product Details Modal */}
-// //       {selectedProduct && (
-// //         <ProductDetails
-// //           product={selectedProduct}
-// //           isOpen={isProductModalOpen}
-// //           onClose={closeProductModal}
-// //           onAddToCart={addToCart}
-// //         />
-// //       )}
-
-// //       {/* Cart Sidebar */}
-// //       {isCartOpen && (
-// //         <div className="fixed inset-0 z-50 overflow-hidden">
-// //           <div
-// //             className="absolute inset-0 bg-black bg-opacity-50"
-// //             onClick={() => setIsCartOpen(false)}
-// //           />
-// //           <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl">
-// //             <div className="flex items-center justify-between p-4 border-b border-gray-200">
-// //               <h2 className="text-lg font-semibold">Shopping Cart</h2>
-// //               <Button
-// //                 variant="ghost"
-// //                 size="icon"
-// //                 onClick={() => setIsCartOpen(false)}
-// //               >
-// //                 <X className="w-5 h-5" />
-// //               </Button>
-// //             </div>
-
-// //             <div className="flex-1 overflow-y-auto p-4">
-// //               {cartItems.length === 0 ? (
-// //                 <div className="text-center py-8">
-// //                   <ShoppingCart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-// //                   <p className="text-gray-500">Your cart is empty</p>
-// //                 </div>
-// //               ) : (
-// //                 <div className="space-y-4">
-// //                   {cartItems.map((item) => (
-// //                     <div
-// //                       key={item.id}
-// //                       className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg"
-// //                     >
-// //                       <Image
-// //                         height={64}
-// //                         width={64}
-// //                         src={item.image || '/placeholder.svg'}
-// //                         alt={item.name}
-// //                         className="w-16 h-16 object-cover rounded"
-// //                       />
-// //                       <div className="flex-1">
-// //                         <h3 className="font-medium text-sm">{item.name}</h3>
-// //                         <p className="text-green-600 font-semibold">
-// //                           ৳{item.price}
-// //                         </p>
-// //                       </div>
-// //                       <div className="flex items-center space-x-2">
-// //                         <Button
-// //                           variant="outline"
-// //                           size="icon"
-// //                           className="w-8 h-8 bg-transparent"
-// //                           onClick={() =>
-// //                             updateQuantity(item.id, item.quantity - 1)
-// //                           }
-// //                         >
-// //                           <Minus className="w-3 h-3" />
-// //                         </Button>
-// //                         <span className="w-8 text-center">{item.quantity}</span>
-// //                         <Button
-// //                           variant="outline"
-// //                           size="icon"
-// //                           className="w-8 h-8 bg-transparent"
-// //                           onClick={() =>
-// //                             updateQuantity(item.id, item.quantity + 1)
-// //                           }
-// //                         >
-// //                           <Plus className="w-3 h-3" />
-// //                         </Button>
-// //                       </div>
-// //                     </div>
-// //                   ))}
-// //                 </div>
-// //               )}
-// //             </div>
-
-// //             {cartItems.length > 0 && (
-// //               <div className="border-t border-gray-200 p-4">
-// //                 <div className="flex items-center justify-between mb-4">
-// //                   <span className="text-lg font-semibold">Total:</span>
-// //                   <span className="text-lg font-bold text-green-600">
-// //                     ৳{getTotalPrice()}
-// //                   </span>
-// //                 </div>
-// //                 <Button
-// //                   className="w-full bg-green-600 hover:bg-green-700 text-white"
-// //                   onClick={() => {
-// //                     setIsCartOpen(false)
-// //                     setIsCheckoutOpen(true)
-// //                   }}
-// //                 >
-// //                   Proceed to Checkout
-// //                 </Button>
-// //               </div>
-// //             )}
-// //           </div>
-// //         </div>
-// //       )}
-
-// //       {/* Login Modal */}
-// //       <SignIn
-// //         isOpen={isLoginOpen}
-// //         onClose={() => setIsLoginOpen(false)}
-// //         onLogin={handleLogin}
-// //         onSwitchToRegister={() => {
-// //           setIsLoginOpen(false)
-// //           setIsRegisterOpen(true)
-// //         }}
-// //       />
-
-// //       {/* Register Modal */}
-// //       <RegisterForm
-// //         isOpen={isRegisterOpen}
-// //         onClose={() => setIsRegisterOpen(false)}
-// //         onRegister={(user) => {
-// //           handleLogin({
-// //             userId: 0,
-// //             username: user.username,
-// //             email: user.email,
-// //           })
-// //         }}
-// //         onSwitchToLogin={() => {
-// //           setIsRegisterOpen(false)
-// //           setIsLoginOpen(true)
-// //         }}
-// //       />
-
-// //       {/* Checkout Modal */}
-// //       <CheckoutForm
-// //         isOpen={isCheckoutOpen}
-// //         onClose={() => setIsCheckoutOpen(false)}
-// //         cartTotal={getTotalPrice()}
-// //         onOrderComplete={handleOrderComplete}
-// //       />
-
-// //       {/* Footer */}
-// //       <Footer />
-// //     </div>
-// //   )
-// // }
-
-
-
-
-
 // 'use client'
 
 // import { useEffect, useState, useCallback } from 'react'
 // import { Button } from '@/components/ui/button'
 // import { ShoppingCart, Plus, Minus, X } from 'lucide-react'
 // import Image from 'next/image'
-
 // import SignIn, { UserType } from './login-form'
 // import RegisterForm from './register-form'
 // import CheckoutForm from './checkout-form'
@@ -400,19 +14,21 @@
 // import Navbar from '../shared/navbar'
 // import { fetchProducts } from '@/api/product-api'
 // import { fetchCategories } from '@/api/categories-api'
+// import { createCart, fetchCarts } from '@/api/cart-api'
 // import { useAtom } from 'jotai'
-// import { tokenAtom, useInitializeUser } from '@/utils/user'
-// import { GetProduct, GetCategory } from '@/utils/type'
+// import { tokenAtom, useInitializeUser, userDataAtom } from '@/utils/user'
+// import { GetProduct, GetCategory, GetCart } from '@/utils/type'
 
 // export default function Home() {
 //   useInitializeUser()
 //   const [token] = useAtom(tokenAtom)
+//   const [userData] = useAtom(userDataAtom)
 //   const [products, setProducts] = useState<GetProduct[]>([])
 //   const [categories, setCategories] = useState<GetCategory[]>([])
 //   const [loading, setLoading] = useState(true)
 //   const [error, setError] = useState<string | null>(null)
 
-//   const [cartItems, setCartItems] = useState<any[]>([])
+//   const [cartItems, setCartItems] = useState<GetCart[]>([])
 //   const [isCartOpen, setIsCartOpen] = useState(false)
 //   const [searchQuery, setSearchQuery] = useState('')
 //   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -424,10 +40,20 @@
 //   const [isRegisterOpen, setIsRegisterOpen] = useState(false)
 //   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
-//   const [selectedProduct, setSelectedProduct] = useState<GetProduct | null>(null)
+//   const [selectedProduct, setSelectedProduct] = useState<GetProduct | null>(
+//     null
+//   )
 //   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
 
-//   // ✅ Fetch categories
+//   // Pagination state for categories
+//   const [categoryLimits, setCategoryLimits] = useState<Record<number, number>>(
+//     {}
+//   )
+//   const [expandedCategories, setExpandedCategories] = useState<
+//     Record<number, boolean>
+//   >({})
+
+//   // Fetch categories
 //   const getCategories = useCallback(async () => {
 //     try {
 //       const res = await fetchCategories(token)
@@ -438,7 +64,7 @@
 //     }
 //   }, [token])
 
-//   // ✅ Fetch products
+//   // Fetch products
 //   const getProducts = useCallback(async () => {
 //     try {
 //       const res = await fetchProducts(token)
@@ -451,10 +77,22 @@
 //     }
 //   }, [token])
 
+//   // Fetch user cart from DB
+//   const loadUserCart = useCallback(async () => {
+//     if (!token) return
+//     try {
+//       const res = await fetchCarts(token)
+//       setCartItems(res.data ?? [])
+//     } catch (err) {
+//       console.error(err)
+//     }
+//   }, [token])
+
 //   useEffect(() => {
 //     getCategories()
 //     getProducts()
-//   }, [getCategories, getProducts])
+//     loadUserCart()
+//   }, [getCategories, getProducts, loadUserCart])
 
 //   const filteredProducts = products.filter(
 //     (product) =>
@@ -465,31 +103,90 @@
 //         .includes(searchQuery.toLowerCase())
 //   )
 
-//   // ✅ Cart logic
-//   const addToCart = (product: GetProduct) => {
-//     setCartItems((prev) => {
-//       const existing = prev.find((item) => item.id === product.id)
-//       if (existing) {
-//         return prev.map((item) =>
-//           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-//         )
+//   // Add to cart function
+//   const addToCart = async (product: GetProduct) => {
+//     if (!token) {
+//       alert('Please login to add items to cart.')
+//       return
+//     }
+
+//     try {
+//       console.log('Adding product to cart:', product.id)
+
+//       const response = await createCart(token, { productId: product.id })
+
+//       console.log('Cart response:', response)
+
+//       if (response?.data) {
+//         // Show success message
+//         const message =
+//           response.data.message || 'Product added to cart successfully!'
+//         alert(message)
+
+//         // Reload cart from database
+//         await loadUserCart()
+//       } else {
+//         alert('Failed to add product to cart.')
 //       }
-//       return [...prev, { ...product, quantity: 1 }]
-//     })
+//     } catch (err: any) {
+//       console.error('Failed to add to cart:', err)
+
+//       // Show more detailed error message
+//       if (err.message) {
+//         alert(`Error: ${err.message}`)
+//       } else {
+//         alert('Failed to add product to cart. Please try again.')
+//       }
+//     }
 //   }
 
-//   const updateQuantity = (id: number, quantity: number) => {
-//     if (quantity <= 0) {
-//       setCartItems((prev) => prev.filter((item) => item.id !== id))
-//     } else {
-//       setCartItems((prev) =>
-//         prev.map((item) => (item.id === id ? { ...item, quantity } : item))
-//       )
+//   // Update quantity in cart - using addToCart for increment
+//   const updateQuantity = async (productId: number, change: number) => {
+//     if (!token) return
+
+//     const cartItem = cartItems.find((item) => item.productId === productId)
+//     const product = products.find((p) => p.id === productId)
+
+//     if (!cartItem || !product) return
+
+//     try {
+//       if (change > 0) {
+//         // For increment (+), call the same addToCart API
+//         await createCart(token, { productId: product.id })
+//         // Reload cart from database to get updated quantity
+//         await loadUserCart()
+//       } else {
+//         // For decrement (-), call addToCart with negative or handle locally
+//         // Since backend might not support decrement, we handle it locally for now
+//         const newQuantity = cartItem.quantity - 1
+
+//         if (newQuantity <= 0) {
+//           // Remove item from cart if quantity becomes 0
+//           setCartItems((prev) =>
+//             prev.filter((item) => item.productId !== productId)
+//           )
+//         } else {
+//           // Update local state for decrement
+//           setCartItems((prev) =>
+//             prev.map((item) =>
+//               item.productId === productId
+//                 ? { ...item, quantity: newQuantity }
+//                 : item
+//             )
+//           )
+//         }
+//       }
+//     } catch (err) {
+//       console.error('Failed to update cart:', err)
+//       alert('Failed to update cart. Please try again.')
 //     }
 //   }
 
 //   const getTotalPrice = () => {
-//     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
+//     return cartItems.reduce(
+//       (total, item) => total + item.price * item.quantity,
+//       0
+//     )
 //   }
 
 //   const getTotalItems = () => {
@@ -506,7 +203,18 @@
 //     setSelectedProduct(null)
 //   }
 
-//   // ✅ handleLogin with persistence
+//   const handleViewAll = (categoryId: number) => {
+//     setExpandedCategories((prev) => ({ ...prev, [categoryId]: true }))
+//     setCategoryLimits((prev) => ({ ...prev, [categoryId]: 12 }))
+//   }
+
+//   const handleSeeMore = (categoryId: number) => {
+//     setCategoryLimits((prev) => ({
+//       ...prev,
+//       [categoryId]: (prev[categoryId] || 12) + 12,
+//     }))
+//   }
+
 //   const handleLogin = (user: UserType) => {
 //     setIsLoggedIn(true)
 //     setCurrentUser(user.username)
@@ -516,7 +224,6 @@
 //     setSavedRoleId(user.roleId ?? 0)
 //   }
 
-//   // ✅ Restore login state
 //   useEffect(() => {
 //     if (typeof window !== 'undefined') {
 //       const savedUser = localStorage.getItem('currentUser')
@@ -547,7 +254,9 @@
 
 //   const handleOrderComplete = () => {
 //     setCartItems([])
-//     alert('Order placed successfully! You will receive a confirmation call shortly.')
+//     alert(
+//       'Order placed successfully! You will receive a confirmation call shortly.'
+//     )
 //   }
 
 //   if (loading) return <p className="text-center mt-10">Loading...</p>
@@ -582,7 +291,7 @@
 //           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 //             {filteredProducts.map((product) => (
 //               <ProductCard
-//                 key={product.categoryId}
+//                 key={product.id}
 //                 product={{
 //                   ...product,
 //                   url: product.url.startsWith('http')
@@ -605,6 +314,13 @@
 //               (product) => product.categoryId === category.id
 //             )
 
+//             const isExpanded = expandedCategories[category.id]
+//             const currentLimit = categoryLimits[category.id] || 4
+//             const displayedProducts = isExpanded
+//               ? categoryProducts.slice(0, currentLimit)
+//               : categoryProducts.slice(0, 4)
+//             const hasMore = categoryProducts.length > currentLimit
+
 //             return (
 //               <section
 //                 key={category.id}
@@ -615,32 +331,51 @@
 //                   <h2 className="text-2xl font-bold text-gray-900">
 //                     {category.name}
 //                   </h2>
-//                   <Button
-//                     variant="outline"
-//                     className="text-green-600 border-green-600 hover:bg-green-600 hover:text-white bg-transparent"
-//                   >
-//                     View All
-//                   </Button>
+//                   {!isExpanded && categoryProducts.length > 4 && (
+//                     <Button
+//                       variant="outline"
+//                       className="text-green-600 border-green-600 hover:bg-green-600 hover:text-white bg-transparent"
+//                       onClick={() => handleViewAll(category.id)}
+//                     >
+//                       View All
+//                     </Button>
+//                   )}
 //                 </div>
 
 //                 {categoryProducts.length > 0 ? (
-//                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-//                     {categoryProducts.map((product:GetProduct) => (
-//                       <ProductCard
-//                         key={product.id}
-//                         product={{
-//                           ...product,
-//                           url: product.url.startsWith('http')
-//                             ? product.url
-//                             : `http://localhost:4000/${product.url}`,
-//                         }}
-//                         onProductClick={openProductModal}
-//                         onAddToCart={addToCart}
-//                       />
-//                     ))}
-//                   </div>
+//                   <>
+//                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+//                       {displayedProducts.map((product: GetProduct) => (
+//                         <ProductCard
+//                           key={product.id}
+//                           product={{
+//                             ...product,
+//                             url: product.url.startsWith('http')
+//                               ? product.url
+//                               : `http://localhost:4000/${product.url}`,
+//                           }}
+//                           onProductClick={openProductModal}
+//                           onAddToCart={addToCart}
+//                         />
+//                       ))}
+//                     </div>
+
+//                     {isExpanded && hasMore && (
+//                       <div className="flex justify-center mt-8">
+//                         <Button
+//                           variant="outline"
+//                           className="text-green-600 border-green-600 hover:bg-green-600 hover:text-white bg-transparent px-8"
+//                           onClick={() => handleSeeMore(category.id)}
+//                         >
+//                           See More
+//                         </Button>
+//                       </div>
+//                     )}
+//                   </>
 //                 ) : (
-//                   <p className="text-gray-500">No products found in this category.</p>
+//                   <p className="text-gray-500">
+//                     No products found in this category.
+//                   </p>
 //                 )}
 //               </section>
 //             )
@@ -687,7 +422,7 @@
 //                 <div className="space-y-4">
 //                   {cartItems.map((item) => (
 //                     <div
-//                       key={item.id}
+//                       key={item.productId}
 //                       className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg"
 //                     >
 //                       <Image
@@ -704,7 +439,7 @@
 //                       <div className="flex-1">
 //                         <h3 className="font-medium text-sm">{item.name}</h3>
 //                         <p className="text-green-600 font-semibold">
-//                           ৳{item.price}
+//                           ৳{item.price * item.quantity}
 //                         </p>
 //                       </div>
 //                       <div className="flex items-center space-x-2">
@@ -712,9 +447,7 @@
 //                           variant="outline"
 //                           size="icon"
 //                           className="w-8 h-8 bg-transparent"
-//                           onClick={() =>
-//                             updateQuantity(item.id, item.quantity - 1)
-//                           }
+//                           onClick={() => updateQuantity(item.productId, -1)}
 //                         >
 //                           <Minus className="w-3 h-3" />
 //                         </Button>
@@ -723,9 +456,7 @@
 //                           variant="outline"
 //                           size="icon"
 //                           className="w-8 h-8 bg-transparent"
-//                           onClick={() =>
-//                             updateQuantity(item.id, item.quantity + 1)
-//                           }
+//                           onClick={() => updateQuantity(item.productId, 1)}
 //                         >
 //                           <Plus className="w-3 h-3" />
 //                         </Button>
@@ -774,13 +505,9 @@
 //       <RegisterForm
 //         isOpen={isRegisterOpen}
 //         onClose={() => setIsRegisterOpen(false)}
-//         onRegister={(user) => {
-//           handleLogin({
-//             userId: 0,
-//             username: user.username,
-//             email: user.email,
-//           })
-//         }}
+//         onRegister={(user) =>
+//           handleLogin({ userId: 0, username: user.username, email: user.email })
+//         }
 //         onSwitchToLogin={() => {
 //           setIsRegisterOpen(false)
 //           setIsLoginOpen(true)
@@ -808,7 +535,6 @@ import { useEffect, useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { ShoppingCart, Plus, Minus, X } from 'lucide-react'
 import Image from 'next/image'
-
 import SignIn, { UserType } from './login-form'
 import RegisterForm from './register-form'
 import CheckoutForm from './checkout-form'
@@ -819,19 +545,21 @@ import ProductDetails from '../product/product-details'
 import Navbar from '../shared/navbar'
 import { fetchProducts } from '@/api/product-api'
 import { fetchCategories } from '@/api/categories-api'
+import { createCart, fetchCarts, deleteCart } from '@/api/cart-api'
 import { useAtom } from 'jotai'
-import { tokenAtom, useInitializeUser } from '@/utils/user'
-import { GetProduct, GetCategory } from '@/utils/type'
+import { tokenAtom, useInitializeUser, userDataAtom } from '@/utils/user'
+import { GetProduct, GetCategory, GetCart } from '@/utils/type'
 
 export default function Home() {
   useInitializeUser()
   const [token] = useAtom(tokenAtom)
+  const [userData] = useAtom(userDataAtom)
   const [products, setProducts] = useState<GetProduct[]>([])
   const [categories, setCategories] = useState<GetCategory[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const [cartItems, setCartItems] = useState<any[]>([])
+  const [cartItems, setCartItems] = useState<GetCart[]>([])
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -843,14 +571,20 @@ export default function Home() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false)
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
-  const [selectedProduct, setSelectedProduct] = useState<GetProduct | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<GetProduct | null>(
+    null
+  )
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
 
-  // ✅ Pagination state for each category
-  const [categoryLimits, setCategoryLimits] = useState<Record<number, number>>({})
-  const [expandedCategories, setExpandedCategories] = useState<Record<number, boolean>>({})
+  // Pagination state for categories
+  const [categoryLimits, setCategoryLimits] = useState<Record<number, number>>(
+    {}
+  )
+  const [expandedCategories, setExpandedCategories] = useState<
+    Record<number, boolean>
+  >({})
 
-  // ✅ Fetch categories
+  // Fetch categories
   const getCategories = useCallback(async () => {
     try {
       const res = await fetchCategories(token)
@@ -861,7 +595,7 @@ export default function Home() {
     }
   }, [token])
 
-  // ✅ Fetch products
+  // Fetch products
   const getProducts = useCallback(async () => {
     try {
       const res = await fetchProducts(token)
@@ -874,10 +608,22 @@ export default function Home() {
     }
   }, [token])
 
+  // Fetch user cart from DB
+  const loadUserCart = useCallback(async () => {
+    if (!token) return
+    try {
+      const res = await fetchCarts(token)
+      setCartItems(res.data ?? [])
+    } catch (err) {
+      console.error(err)
+    }
+  }, [token])
+
   useEffect(() => {
     getCategories()
     getProducts()
-  }, [getCategories, getProducts])
+    loadUserCart()
+  }, [getCategories, getProducts, loadUserCart])
 
   const filteredProducts = products.filter(
     (product) =>
@@ -888,31 +634,91 @@ export default function Home() {
         .includes(searchQuery.toLowerCase())
   )
 
-  // ✅ Cart logic
-  const addToCart = (product: GetProduct) => {
-    setCartItems((prev) => {
-      const existing = prev.find((item) => item.id === product.id)
-      if (existing) {
-        return prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-        )
+  // Add to cart function
+  const addToCart = async (product: GetProduct) => {
+    if (!token) {
+      alert('Please login to add items to cart.')
+      return
+    }
+
+    try {
+      console.log('Adding product to cart:', product.id)
+
+      const response = await createCart(token, { productId: product.id })
+
+      console.log('Cart response:', response)
+
+      if (response?.data) {
+        // Show success message
+        const message =
+          response.data.message || 'Product added to cart successfully!'
+        alert(message)
+
+        // Reload cart from database
+        await loadUserCart()
+      } else {
+        alert('Failed to add product to cart.')
       }
-      return [...prev, { ...product, quantity: 1 }]
-    })
+    } catch (err: any) {
+      console.error('Failed to add to cart:', err)
+
+      // Show more detailed error message
+      if (err.message) {
+        alert(`Error: ${err.message}`)
+      } else {
+        alert('Failed to add product to cart. Please try again.')
+      }
+    }
   }
 
-  const updateQuantity = (id: number, quantity: number) => {
-    if (quantity <= 0) {
-      setCartItems((prev) => prev.filter((item) => item.id !== id))
-    } else {
-      setCartItems((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, quantity } : item))
-      )
+  // Update quantity in cart - using addToCart for increment and deleteCart for decrement
+  const updateQuantity = async (productId: number, change: number) => {
+    if (!token) return
+
+    const cartItem = cartItems.find((item) => item.productId === productId)
+    const product = products.find((p) => p.id === productId)
+
+    if (!cartItem || !product) return
+
+    try {
+      if (change > 0) {
+        // For increment (+), call the addToCart API
+        await createCart(token, { productId: product.id })
+        // Reload cart from database to get updated quantity
+        await loadUserCart()
+      } else {
+        // For decrement (-), call the deleteCart API
+        const response = await deleteCart(token, productId)
+        
+        console.log('Delete cart response:', response)
+
+        if (response?.data) {
+          // Show success message (optional)
+         
+          
+          // Reload cart from database to get updated quantity or removed item
+          await loadUserCart()
+        } else {
+          alert('Failed to update cart.')
+        }
+      }
+    } catch (err: any) {
+      console.error('Failed to update cart:', err)
+      
+      // Show more detailed error message
+      if (err.message) {
+        alert(`Error: ${err.message}`)
+      } else {
+        alert('Failed to update cart. Please try again.')
+      }
     }
   }
 
   const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
+    return cartItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    )
   }
 
   const getTotalItems = () => {
@@ -929,13 +735,11 @@ export default function Home() {
     setSelectedProduct(null)
   }
 
-  // ✅ Handle View All button
   const handleViewAll = (categoryId: number) => {
     setExpandedCategories((prev) => ({ ...prev, [categoryId]: true }))
     setCategoryLimits((prev) => ({ ...prev, [categoryId]: 12 }))
   }
 
-  // ✅ Handle See More button
   const handleSeeMore = (categoryId: number) => {
     setCategoryLimits((prev) => ({
       ...prev,
@@ -943,7 +747,6 @@ export default function Home() {
     }))
   }
 
-  // ✅ handleLogin with persistence
   const handleLogin = (user: UserType) => {
     setIsLoggedIn(true)
     setCurrentUser(user.username)
@@ -953,7 +756,6 @@ export default function Home() {
     setSavedRoleId(user.roleId ?? 0)
   }
 
-  // ✅ Restore login state
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedUser = localStorage.getItem('currentUser')
@@ -984,7 +786,9 @@ export default function Home() {
 
   const handleOrderComplete = () => {
     setCartItems([])
-    alert('Order placed successfully! You will receive a confirmation call shortly.')
+    alert(
+      'Order placed successfully! You will receive a confirmation call shortly.'
+    )
   }
 
   if (loading) return <p className="text-center mt-10">Loading...</p>
@@ -1088,7 +892,6 @@ export default function Home() {
                       ))}
                     </div>
 
-                    {/* See More Button */}
                     {isExpanded && hasMore && (
                       <div className="flex justify-center mt-8">
                         <Button
@@ -1102,7 +905,9 @@ export default function Home() {
                     )}
                   </>
                 ) : (
-                  <p className="text-gray-500">No products found in this category.</p>
+                  <p className="text-gray-500">
+                    No products found in this category.
+                  </p>
                 )}
               </section>
             )
@@ -1149,7 +954,7 @@ export default function Home() {
                 <div className="space-y-4">
                   {cartItems.map((item) => (
                     <div
-                      key={item.id}
+                      key={item.productId}
                       className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg"
                     >
                       <Image
@@ -1166,7 +971,7 @@ export default function Home() {
                       <div className="flex-1">
                         <h3 className="font-medium text-sm">{item.name}</h3>
                         <p className="text-green-600 font-semibold">
-                          ৳{item.price}
+                          ৳{item.price * item.quantity}
                         </p>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -1174,9 +979,7 @@ export default function Home() {
                           variant="outline"
                           size="icon"
                           className="w-8 h-8 bg-transparent"
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity - 1)
-                          }
+                          onClick={() => updateQuantity(item.productId, -1)}
                         >
                           <Minus className="w-3 h-3" />
                         </Button>
@@ -1185,9 +988,7 @@ export default function Home() {
                           variant="outline"
                           size="icon"
                           className="w-8 h-8 bg-transparent"
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity + 1)
-                          }
+                          onClick={() => updateQuantity(item.productId, 1)}
                         >
                           <Plus className="w-3 h-3" />
                         </Button>
@@ -1236,13 +1037,9 @@ export default function Home() {
       <RegisterForm
         isOpen={isRegisterOpen}
         onClose={() => setIsRegisterOpen(false)}
-        onRegister={(user) => {
-          handleLogin({
-            userId: 0,
-            username: user.username,
-            email: user.email,
-          })
-        }}
+        onRegister={(user) =>
+          handleLogin({ userId: 0, username: user.username, email: user.email })
+        }
         onSwitchToLogin={() => {
           setIsRegisterOpen(false)
           setIsLoginOpen(true)

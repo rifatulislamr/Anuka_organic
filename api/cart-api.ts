@@ -1,33 +1,46 @@
-import { fetchApi } from "@/utils/http";
-import { GetCart } from "@/utils/type";
+import { fetchApi } from '@/utils/http'
+import { AddToCartResponse, GetCart } from '@/utils/type'
 
 //get all carts api
 export async function fetchCarts(token: string) {
   return fetchApi<GetCart[]>({
-    url: "api/cart/get-cart",
-    method: "GET",
+    url: 'api/cart/get-cart',
+    method: 'GET',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `${token}`,
     },
   })
 }
 
-// ✅ Create a new cart
-export async function createCart(
-  token: string,
-  data: { userId: number; productId: number }
-) {
-  return fetchApi<GetCart>({
+
+
+export async function createCart(token: string, data: { productId: number }) {
+  console.log("tokensdsdsd:", token)
+
+  return fetchApi<AddToCartResponse>({
     url: 'api/cart/create-cart',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `${token}`,
+      Authorization: ` ${token}`, // important
     },
-    body: JSON.stringify(data),
+    body: data,
   })
 }
+// export async function createCart(token: string, data: { productId: number }) {
+//   console.log("Creating cart with product ID:", data.productId)
+
+//   return fetchApi<AddToCartResponse>({
+//     url: 'api/cart/create-cart',
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       Authorization: token,
+//     },
+//     body: data, // ✅ Pass the object directly, let fetchApi stringify it
+//   })
+// }
 
 // ✅ Delete a cart by productId
 export async function deleteCart(token: string, productId: number) {

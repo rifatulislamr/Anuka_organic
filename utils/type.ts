@@ -115,13 +115,32 @@ export type GetCategory = {
 export type CategoriesResponse = GetCategory[]
 
 //get cart item type
-export type GetCart = {
+// export type GetCart = {
+//   cartId: number
+//   productId: number
+//   name: string
+//   price: number
+//   quantity:number
+//    url: string
+//   createdAt: string
+// }
+
+export interface GetCart {
   cartId: number
   productId: number
+  quantity: number
   name: string
   price: number
+  url: string
   createdAt: string
 }
+
+
+export interface AddToCartResponse {
+  message: string
+}
+
+
 
 //get all orders type
 export type GetAllOrdersType = {
@@ -173,6 +192,7 @@ export interface OrderResponse {
     name?: string
   }[]
 }
+
 
 
 
