@@ -1,35 +1,41 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { getUsers } from '@/api/users-api'
-import { User } from '@/utils/type'
+import { Users } from '@/utils/type'
+
 
 interface UsersPageProps {
   token: string
 }
 
 const UsersPage: React.FC<UsersPageProps> = ({ token }) => {
-  const [users, setUsers] = useState<User[]>([])
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<Users[]>([])
+  const [filteredUsers, setFilteredUsers] = useState<Users[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const rowsPerPage = 7
 
-  useEffect(() => {
-    async function fetchUsers() {
-      try {
-        const res = await getUsers(token)
-        setUsers(res.data || [])
-        setFilteredUsers(res.data || [])
-      } catch (error) {
-        console.error('Failed to fetch users:', error)
-      } finally {
-        setLoading(false)
-      }
+
+   // ✅ useCallback function for fetching users
+  const fetchUsers = useCallback(async () => {
+    try {
+      const res = await getUsers(token)
+      setUsers(res.data || [])
+      setFilteredUsers(res.data || [])
+      console.log(res.data || [])
+    } catch (error) {
+      console.error('Failed to fetch users:', error)
+    } finally {
+      setLoading(false)
     }
+  }, [token]) // only re-created when token changes
+
+  // ✅ call useCallback inside useEffect
+  useEffect(() => {
     fetchUsers()
-  }, [token])
+  }, [fetchUsers])
 
   // Handle search
   useEffect(() => {

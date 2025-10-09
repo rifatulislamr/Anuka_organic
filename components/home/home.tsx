@@ -600,6 +600,7 @@ export default function Home() {
         onSwitchToLogin={() => {
           setIsRegisterOpen(false)
           setIsLoginOpen(true)
+          
         }}
       />
 

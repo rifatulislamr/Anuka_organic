@@ -59,7 +59,7 @@ export type SignInResponse = z.infer<typeof SignInResponseSchema>
 
 
 // ✅ Define User type (based on your DB schema)
-export type User = {
+export type Users = {
   userId: number
   username: string
   email: string
