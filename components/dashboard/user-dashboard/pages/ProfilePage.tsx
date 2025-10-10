@@ -550,7 +550,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, onUserUpdate, onRefresh
                 )}
               </div>
 
-              <div>
+              {/* <div>
                 <p className="text-gray-500 text-sm font-medium mb-1">Postal Code</p>
                  
                   
@@ -559,7 +559,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, onUserUpdate, onRefresh
                     {formData.postalCode ?? 'N/A'}
                   </p>
                 
-              </div>
+              </div> */}
 
               <div>
                 <p className="text-gray-500 text-sm font-medium mb-1">Role</p>
