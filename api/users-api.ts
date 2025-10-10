@@ -1,9 +1,9 @@
 import { fetchApi } from '@/utils/http'
-import { User } from '@/utils/type'
+import { Users } from '@/utils/type'
 
 // ✅ Function to fetch all users
 export async function getUsers(token: string) {
-  return fetchApi<User[]>({
+  return fetchApi<Users[]>({
     url: 'api/auth/users',
     method: 'GET',
     headers: {
@@ -15,7 +15,7 @@ export async function getUsers(token: string) {
 
 // ✅ Function to fetch a user by userId
 export async function getUserByIdApi(token: string, userId: number) {
-  return fetchApi<User>({
+  return fetchApi<Users>({
     url: `api/auth/users-by-userId/${userId}`, // API endpoint
     method: 'GET',
     headers: {
@@ -32,13 +32,13 @@ export async function updateUserApi(
   data: Partial<any> // allow partial updates
 ) 
 {
-  return fetchApi<User>({
+  return fetchApi<Users>({
     url: `api/auth/users/${userId}`, // endpoint
     method: 'PUT', // update method
     headers: {
       'Content-Type': 'application/json',
       Authorization: `${token}`,
     },
-    body: JSON.stringify(data), // send updated fields
+    body: data, // send updated fields
   })
 }

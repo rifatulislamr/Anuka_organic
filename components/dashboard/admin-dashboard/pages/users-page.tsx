@@ -85,6 +85,9 @@ const UsersPage: React.FC<UsersPageProps> = ({ token }) => {
                 <tr>
                   <th className="p-4 text-left">User</th>
                   <th className="p-4 text-left">Email</th>
+                  <th className="p-4 text-left">Mobile</th>
+                  <th className="p-4 text-left">Address</th>
+
                   <th className="p-4 text-left">Role</th>
                   <th className="p-4 text-left">Status</th>
                   <th className="p-4 text-left">Join Date</th>
@@ -109,6 +112,8 @@ const UsersPage: React.FC<UsersPageProps> = ({ token }) => {
                       </div>
                     </td>
                     <td className="p-4 text-gray-700">{user.email}</td>
+                    <td className="p-4 text-gray-700">{user.phone}</td>
+                    <td className="p-4 text-gray-700">{user.street} {user.state} {user.city} {user.country}</td>
                     <td className="p-4">
                       <span
                         className={`px-3 py-1 rounded-full text-sm font-semibold ${

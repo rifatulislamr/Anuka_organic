@@ -16,21 +16,32 @@ export default function Footer() {
   ]
 
   return (
-    <footer className="bg-white border-t border-gray-200 mt-16">
+    <footer className="bg-white border-t border-gray-200 mt-16 mb-20">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-3">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="flex flex-col">
-                  <span className=" font-bold text-green-700">
-                    জীবনের প্রয়োজনে । <span className="text-xl">Anuka</span>
-                  </span>
-                </div>
-              </div>
-            </Link>
-            <div className="flex flex-col font-bold text-green-700 ">
+      <div className="flex flex-col">
+        <span className="font-bold text-green-700 flex items-center space-x-2">
+          {/* Bengali text first */}
+          <span>জীবনের প্রয়োজনে ।</span>
+
+          {/* Inline image beside the word “Anuka” */}
+          <span className="flex items-center space-x-1">
+            <Image
+              src="/logo.jpg" // ✅ replace with your image path
+              alt="Anuka Logo"
+              width={80}
+              height={100}
+              className="object-contain rounded-md"
+            />
+          
+          </span>
+        </span>
+      </div>
+    </Link>
+            <div className="flex flex-col font-bold text-green-700 mt-8">
               <span>Morshed A. Chowdhury</span>
               <span>Founder & CEO</span>
             </div>
@@ -42,10 +53,10 @@ export default function Footer() {
                 onMouseLeave={() => setHovered(false)}
               >
                 {/* ✅ Parent (Main Facebook Icon — Normal) */}
-                <Button
+                 <Button
                   variant="outline"
                   size="icon"
-                  className="w-10 h-10 text-gray-600 hover:text-green-600 border-gray-300 bg-transparent transition-all duration-300 rounded-full"
+                  className="w-8 h-8 text-gray-600 hover:text-green-600 bg-transparent"
                 >
                   <Facebook className="w-5 h-5" />
                 </Button>
@@ -63,7 +74,7 @@ export default function Footer() {
                         }
                       : { opacity: 0, scale: 0.8, y: 10 }
                   }
-                  className="absolute top-12 flex gap-3 bg-white p-2 rounded-xl shadow-lg"
+                  className="absolute top-8 flex gap-3 bg-white p-2 rounded-xl shadow-lg"
                 >
                   {links.map((link, index) => (
                     <motion.a

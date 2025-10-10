@@ -67,7 +67,7 @@ export default function ProductCard({
                 : 'bg-red-100 text-red-800'
             }`}
           >
-            {product.stock ? 'In Stock' : 'Out of Stock'}
+            {product.stock ? 'In Stock' : 'Out of Stock'}({product.stock})
           </span>
         </div>
 
