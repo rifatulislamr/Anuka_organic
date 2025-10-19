@@ -19,7 +19,8 @@ import {
   ChevronRight,
   LogOut,
   LayoutDashboard,
-  UserIcon,
+  Menu,
+  X,
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -68,6 +69,8 @@ export default function Navbar({
   const [categorySubmenus, setCategorySubmenus] = useState<
     Record<string, { id: number; name: string; count: number }[]>
   >({})
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
   const [token] = useAtom(tokenAtom)
   const router = useRouter()
 
@@ -97,7 +100,7 @@ export default function Navbar({
               ) || []
 
             categoryMap[cat.name] = subProducts.map((sp: GetProduct) => ({
-              id: sp.id, // This is the product ID
+              id: sp.id,
               name: sp.name,
               count: sp.stock || 0,
             }))
@@ -116,6 +119,8 @@ export default function Navbar({
   const handleCategoryClick = (categoryId: number) => {
     setIsBrowseOpen(false)
     setHoveredCategory(null)
+    setIsMobileMenuOpen(false)
+    setExpandedCategory(null)
     if (onCategoryClick) {
       onCategoryClick(categoryId)
     }
@@ -123,13 +128,19 @@ export default function Navbar({
 
   const handleSubProductClick = (productId: number, e?: React.MouseEvent) => {
     if (e) {
-      e.stopPropagation() // Prevent event bubbling
+      e.stopPropagation()
     }
     setIsBrowseOpen(false)
     setHoveredCategory(null)
+    setIsMobileMenuOpen(false)
+    setExpandedCategory(null)
     if (onProductClick) {
       onProductClick(productId)
     }
+  }
+
+  const toggleMobileCategory = (categoryName: string) => {
+    setExpandedCategory(expandedCategory === categoryName ? null : categoryName)
   }
 
   return (
@@ -138,25 +149,38 @@ export default function Navbar({
       <header className="bg-white shadow-sm border-b sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            {/* Logo and Browse Categories */}
+            {/* Mobile Menu Button */}
+            <button
+              className="lg:hidden text-gray-700 hover:text-green-600 p-2"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+
+            {/* Logo and Browse Categories (Desktop) */}
             <div className="flex items-center space-x-6">
               {/* Logo */}
               <Link href="/" className="flex items-center space-x-3">
                 <div className="flex flex-col">
                   <Image
-                    src="/logo.jpg" // ✅ replace with your image path
+                    src="/logo.jpg"
                     alt="Anuka Logo"
                     width={120}
                     height={100}
                     className="object-contain rounded-full"
                   />
-                  <span className="text-base font-medium text-green-600 ml-6 mt-1.5">
+                  <span className="text-base font-medium text-green-600 ml-6 mt-1.5 hidden sm:block">
                     ORGANIC
                   </span>
                 </div>
               </Link>
 
-              <div className="relative">
+              {/* Desktop Browse Categories */}
+              <div className="relative hidden lg:block">
                 <button
                   className="flex items-center space-x-1 text-gray-700 hover:text-green-600 font-medium transition-colors px-3 py-2"
                   onMouseEnter={() => setIsBrowseOpen(true)}
@@ -170,7 +194,7 @@ export default function Navbar({
                 {/* Main Categories Dropdown */}
                 {isBrowseOpen && (
                   <div
-                    className=" absolute top-full left-0 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+                    className="absolute top-full left-0 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
                     onMouseLeave={() => {
                       setIsBrowseOpen(false)
                       setHoveredCategory(null)
@@ -191,33 +215,6 @@ export default function Navbar({
                           </span>
                           <ChevronRight className="w-4 h-4 text-gray-400" />
                         </div>
-
-                        {/* Subcategories Side Menu */}
-                        {/* {hoveredCategory === category.name && (
-                          <div className=" overflow-y-scroll max-h-[60vh] absolute left-full top-0 min-w-96 bg-white border border-gray-200 rounded-lg shadow-lg z-50 ml-0">
-                            <div className="p-2">
-                              <h4 className="text-sm font-semibold text-gray-800 px-3 py-2 border-b border-gray-100 mb-2">
-                                {category.name}
-                              </h4>
-                              {categorySubmenus[
-                                category.name
-                              ]?.map((subcategory, index) => (
-                                <div
-                                  key={`${category.name}-${subcategory.id}-${index}`}
-                                  className="flex items-center justify-between px-3 py-2 hover:bg-green-50 cursor-pointer transition-colors rounded"
-                                  onClick={(e) => handleSubProductClick(subcategory.id, e)}
-                                >
-                                  <span className="text-gray-600 hover:text-green-600 text-sm">
-                                    {subcategory.name}
-                                  </span>
-                                  <span className="text-xs text-gray-400">
-                                    ({subcategory.count})
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )} */}
                       </div>
                     ))}
                   </div>
@@ -226,7 +223,7 @@ export default function Navbar({
             </div>
 
             {/* Search Bar */}
-            <div className="flex-1 max-w-2xl mx-8">
+            <div className="flex-1 max-w-2xl mx-2 sm:mx-8 hidden sm:block">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <Input
@@ -246,17 +243,17 @@ export default function Navbar({
             </div>
 
             {/* Right Actions */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <DropdownMenu open={open} onOpenChange={setOpen}>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="flex items-center space-x-2 text-gray-600 hover:text-green-600 hover:bg-green-50 px-3 py-2 rounded-lg transition-all duration-200"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-green-600 hover:bg-green-50 px-2 sm:px-3 py-2 rounded-lg transition-all duration-200"
                     onMouseEnter={() => setOpen(true)}
                   >
                     <User className="w-5 h-5" />
                     {isLoggedIn && (
-                      <span className="hidden sm:block text-sm font-medium">
+                      <span className="hidden md:block text-sm font-medium">
                         Hi, {currentUser}
                       </span>
                     )}
@@ -310,7 +307,7 @@ export default function Navbar({
                           onClick={() => router.push('/user-dashboard')}
                           className="flex items-center space-x-2 px-3 py-2 hover:bg-green-50 rounded-md cursor-pointer transition-colors"
                         >
-                          <UserIcon className="w-4 h-4 text-green-600" />
+                          <User className="w-4 h-4 text-green-600" />
                           <span className="text-gray-700">My Dashboard</span>
                         </DropdownMenuItem>
                       )}
@@ -343,8 +340,70 @@ export default function Navbar({
               </Button>
             </div>
           </div>
+
+          {/* Mobile Search Bar */}
+          <div className="sm:hidden pb-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+              {searchQuery && (
+                <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-lg shadow-lg mt-1 p-2 text-sm text-gray-600 z-50">
+                  Found {filteredProducts.length} products
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </header>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile Menu Sidebar */}
+      <div
+        className={`fixed top-0 left-0 h-full w-80 bg-white shadow-xl z-40 transform transition-transform duration-300 ease-in-out lg:hidden ${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex items-center justify-between p-4 border-b">
+          <h2 className="text-lg font-semibold text-gray-800">Categories</h2>
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="text-gray-600 hover:text-gray-800"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="overflow-y-auto h-[calc(100%-64px)]">
+          {categories.map((category) => (
+            <div key={category.id} className="border-b border-gray-100">
+              <div
+                className="flex items-center justify-between px-4 py-3 hover:bg-green-50 cursor-pointer transition-colors"
+                onClick={() => handleCategoryClick(category.id)}
+              >
+                <span className="text-gray-700 font-medium">
+                  {category.name}
+                </span>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </>
   )
 }
+
+
