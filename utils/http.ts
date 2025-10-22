@@ -26,7 +26,7 @@ const handleLogout = () => {
   //window.location.href = '/login'
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
+const API_BASE_URL = "https://anuka-server.onrender.com"
 
 // Main fetch utility function
 export async function fetchApi<T>({
