@@ -122,7 +122,7 @@ export default function ProductDetailsPage() {
             ...foundProduct,
             url: foundProduct.url.startsWith('http')
               ? foundProduct.url
-              : `http://localhost:4000/${foundProduct.url}`,
+              : `https://anukabd.com/api/${foundProduct.url}`,
           }
           setProduct(productWithUrl)
         } else {
