@@ -14,7 +14,7 @@ export async function fetchApiCreate<T>({
   headers?: HeadersInit
   body?: any
 }): Promise<T> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000/"
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL 
   const isFormData = body instanceof FormData
 
   const finalHeaders = isFormData

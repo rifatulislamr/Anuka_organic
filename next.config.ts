@@ -8,7 +8,8 @@ const nextConfig: NextConfig = {
       'example.com', 
       'via.placeholder.com', 
       'images.unsplash.com',
-      'localhost',           // Add this for local backend images
+      'localhost',         // Add this for local backend images
+      'anukabd.com',
     ],
   },
 }
