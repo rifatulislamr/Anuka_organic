@@ -173,9 +173,9 @@ export default function Navbar({
                     height={100}
                     className="object-contain rounded-full"
                   />
-                  <span className="text-base font-medium text-green-600 ml-6 mt-1.5 hidden sm:block">
+                  {/* <span className="text-base font-medium text-green-600 ml-6 mt-1.5 hidden sm:block">
                     ORGANIC
-                  </span>
+                  </span> */}
                 </div>
               </Link>
 

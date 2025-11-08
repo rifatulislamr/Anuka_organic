@@ -4,52 +4,52 @@ import React, { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { useAtom } from 'jotai'
 import { GetCategory, GetProduct } from '@/utils/type'
-import { fetchProducts } from '@/api/product-api'
+import { createProduct, CreateProductForm, fetchProducts } from '@/api/product-api'
 import { tokenAtom, useInitializeUser } from '@/utils/user'
 import { fetchCategories } from '@/api/categories-api'
 
-// Product creation type
-export type CreateProductForm = {
-  name: string
-  description: string
-  price: number
-  stock: number
-  categoryId: number
-  isActive: boolean
-  image?: File
-}
+// // Product creation type
+// export type CreateProductForm = {
+//   name: string
+//   description: string
+//   price: number
+//   stock: number
+//   categoryId: number
+//   isActive: boolean
+//   image?: File
+// }
 
-// Function to create product with file
-export async function createProductWithFile(
-  token: string,
-  product: CreateProductForm
-) {
-  const formData = new FormData()
-  formData.append('name', product.name)
-  formData.append('description', product.description)
-  formData.append('price', String(product.price))
-  formData.append('stock', String(product.stock))
-  formData.append('categoryId', String(product.categoryId))
-  formData.append('isActive', String(product.isActive))
-  if (product.image) {
-    formData.append('image', product.image)
-  }
+// // Function to create product with file
+// export async function createProductWithFile(
+//   token: string,
+//   product: CreateProductForm
+// ) {
+//   const formData = new FormData()
+//   formData.append('name', product.name)
+//   formData.append('description', product.description)
+//   formData.append('price', String(product.price))
+//   formData.append('stock', String(product.stock))
+//   formData.append('categoryId', String(product.categoryId))
+//   formData.append('isActive', String(product.isActive))
+//   if (product.image) {
+//     formData.append('image', product.image)
+//   }
 
-  const response = await fetch('http://localhost:4000/api/products/create', {
-    method: 'POST',
-    headers: {
-      Authorization: `${token}`,
-    },
-    body: formData,
-  })
+//   const response = await fetch('http://localhost:4000/api/products/create', {
+//     method: 'POST',
+//     headers: {
+//       Authorization: `${token}`,
+//     },
+//     body: formData,
+//   })
 
-  if (!response.ok) {
-    const text = await response.text()
-    throw new Error(text || 'Failed to create product')
-  }
+//   if (!response.ok) {
+//     const text = await response.text()
+//     throw new Error(text || 'Failed to create product')
+//   }
 
-  return response.json()
-}
+//   return response.json()
+// }
 
 const ProductsPage = () => {
   useInitializeUser()
@@ -149,7 +149,7 @@ const ProductsPage = () => {
     try {
       setCreating(true)
       setFormError(null)
-      await createProductWithFile(token, formData)
+      await createProduct(token, formData)
       setShowForm(false)
       setPreview(null)
       setFormData({

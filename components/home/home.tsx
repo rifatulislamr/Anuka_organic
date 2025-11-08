@@ -422,7 +422,7 @@ export default function Home() {
                   ...product,
                   url: product.url.startsWith('http')
                     ? product.url
-                    : `https://anukabd.com/api/${product.url}`,
+                    : `https://anukabd.com/${product.url}`,
                 }}
                 onProductClick={openProductModal}
                 onAddToCart={addToCart}
@@ -481,7 +481,7 @@ export default function Home() {
                             ...product,
                             url: product.url.startsWith('http')
                               ? product.url
-                              : `https://anukabd.com/api/${product.url}`,
+                              : `https://anukabd.com/${product.url}`,
                           }}
                           onProductClick={openProductModal}
                           onAddToCart={addToCart}
@@ -561,7 +561,7 @@ export default function Home() {
                         src={
                           item.url?.startsWith('http')
                             ? item.url
-                            : `https://anukabd.com/api/${item.url}`
+                            : `https://anukabd.com/${item.url}`
                         }
                         alt={item.name}
                         className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded"
