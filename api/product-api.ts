@@ -5,12 +5,12 @@ import {  GetProduct } from "@/utils/type"
 
 export async function fetchApiCreate<T>({
   url,
-  method = "GET",
+  method,
   headers = {},
   body,
 }: {
   url: string
-  method?: string
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
   headers?: HeadersInit
   body?: any
 }): Promise<T> {

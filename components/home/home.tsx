@@ -1,7 +1,3 @@
-
-
-
-
 'use client'
 
 import { useEffect, useState, useCallback, useRef } from 'react'
@@ -121,9 +117,12 @@ export default function Home() {
     const categoryElement = categoryRefs.current[categoryId]
     if (categoryElement) {
       const yOffset = -80 // Offset for sticky navbar
-      const y = categoryElement.getBoundingClientRect().top + window.pageYOffset + yOffset
+      const y =
+        categoryElement.getBoundingClientRect().top +
+        window.pageYOffset +
+        yOffset
       window.scrollTo({ top: y, behavior: 'smooth' })
-      
+
       // Expand the category to show all products
       setExpandedCategories((prev) => ({ ...prev, [categoryId]: true }))
       setCategoryLimits((prev) => ({ ...prev, [categoryId]: 12 }))
@@ -133,7 +132,7 @@ export default function Home() {
   // Handle product click from navbar submenu
   const handleProductClickFromNav = (productId: number) => {
     console.log('Product clicked from nav:', productId)
-    const product = products.find(p => p.id === productId)
+    const product = products.find((p) => p.id === productId)
     console.log('Found product:', product)
     if (product) {
       // Open the product modal
@@ -422,7 +421,7 @@ export default function Home() {
                   ...product,
                   url: product.url.startsWith('http')
                     ? product.url
-                    : `https://anukabd.com/${product.url}`,
+                    : `https://anukabd.com/api/uploads/${product.url}`,
                 }}
                 onProductClick={openProductModal}
                 onAddToCart={addToCart}
@@ -481,12 +480,13 @@ export default function Home() {
                             ...product,
                             url: product.url.startsWith('http')
                               ? product.url
-                              : `https://anukabd.com/${product.url}`,
+                              : `https://anukabd.com/api/uploads/${product.url}`,
                           }}
                           onProductClick={openProductModal}
                           onAddToCart={addToCart}
                         />
                       ))}
+                     
                     </div>
 
                     {isExpanded && hasMore && (
@@ -531,7 +531,9 @@ export default function Home() {
           />
           <div className="absolute right-0 top-0 h-full w-full sm:w-full sm:max-w-md bg-white shadow-xl flex flex-col">
             <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200">
-              <h2 className="text-base sm:text-lg font-semibold">Shopping Cart</h2>
+              <h2 className="text-base sm:text-lg font-semibold">
+                Shopping Cart
+              </h2>
               <Button
                 variant="ghost"
                 size="icon"
@@ -546,7 +548,9 @@ export default function Home() {
               {cartItems.length === 0 ? (
                 <div className="text-center py-8 sm:py-12">
                   <ShoppingCart className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
-                  <p className="text-sm sm:text-base text-gray-500">Your cart is empty</p>
+                  <p className="text-sm sm:text-base text-gray-500">
+                    Your cart is empty
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-3 sm:space-y-4">
@@ -561,13 +565,15 @@ export default function Home() {
                         src={
                           item.url?.startsWith('http')
                             ? item.url
-                            : `https://anukabd.com/${item.url}`
+                            : `https://anukabd.com/api/uploads/${item.url}`
                         }
                         alt={item.name}
                         className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded"
                       />
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-xs sm:text-sm truncate">{item.name}</h3>
+                        <h3 className="font-medium text-xs sm:text-sm truncate">
+                          {item.name}
+                        </h3>
                         <p className="text-green-600 font-semibold text-xs sm:text-sm">
                           ৳{item.price * item.quantity}
                         </p>
@@ -581,7 +587,9 @@ export default function Home() {
                         >
                           <Minus className="w-3 h-3" />
                         </Button>
-                        <span className="w-6 sm:w-8 text-center text-xs sm:text-sm">{item.quantity}</span>
+                        <span className="w-6 sm:w-8 text-center text-xs sm:text-sm">
+                          {item.quantity}
+                        </span>
                         <Button
                           variant="outline"
                           size="icon"
@@ -600,7 +608,9 @@ export default function Home() {
             {cartItems.length > 0 && (
               <div className="border-t border-gray-200 p-3 sm:p-4">
                 <div className="flex items-center justify-between mb-3 sm:mb-4">
-                  <span className="text-base sm:text-lg font-semibold">Total:</span>
+                  <span className="text-base sm:text-lg font-semibold">
+                    Total:
+                  </span>
                   <span className="text-base sm:text-lg font-bold text-green-600">
                     ৳{getTotalPrice()}
                   </span>
@@ -641,7 +651,6 @@ export default function Home() {
         onSwitchToLogin={() => {
           setIsRegisterOpen(false)
           setIsLoginOpen(true)
-          
         }}
       />
 
