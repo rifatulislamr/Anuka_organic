@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
       'images.unsplash.com',
       'localhost',         // Add this for local backend images
       'anukabd.com',
+      'endpoints.anukabd.com'
     ],
   },
 }
