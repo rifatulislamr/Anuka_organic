@@ -276,6 +276,8 @@ export default function Home() {
     localStorage.setItem('roleId', String(user.roleId ?? 0))
     setSavedRoleId(user.roleId ?? 0)
     await loadUserCart() // Load cart after login
+     // Refresh the page after successful login
+    window.location.reload()
   }
 
   useEffect(() => {
@@ -305,6 +307,8 @@ export default function Home() {
     localStorage.removeItem('authToken')
     localStorage.removeItem('currentUser')
     localStorage.removeItem('roleId')
+     // Refresh the page after successful login
+    window.location.reload()
   }
 
   const handleOrderComplete = async () => {
