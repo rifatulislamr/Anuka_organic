@@ -59,11 +59,7 @@ export default function RegisterForm({
   // Password requirements validation
   const [passwordRequirements, setPasswordRequirements] = useState<PasswordRequirement[]>([
     { text: 'At least 8 characters long', met: false },
-    { text: 'Contains uppercase letter (A-Z)', met: false },
-    { text: 'Contains lowercase letter (a-z)', met: false },
-    { text: 'Contains a number (0-9)', met: false },
-    { text: 'Contains special character (!@#$%^&*...)', met: false },
-    { text: 'Not a common password', met: false },
+   
   ])
 
   // Fetch all existing users when modal opens
@@ -96,11 +92,6 @@ export default function RegisterForm({
 
     setPasswordRequirements([
       { text: 'At least 8 characters long', met: password.length >= 8 },
-      { text: 'Contains uppercase letter (A-Z)', met: /[A-Z]/.test(password) },
-      { text: 'Contains lowercase letter (a-z)', met: /[a-z]/.test(password) },
-      { text: 'Contains a number (0-9)', met: /\d/.test(password) },
-      { text: 'Contains special character (!@#$%^&*...)', met: /[!@#$%^&*(),.?":{}|<>]/.test(password) },
-      { text: 'Not a common password', met: password.length > 0 && !commonPasswords.includes(password.toLowerCase()) },
     ])
   }, [formData.password])
 
