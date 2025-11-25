@@ -1,168 +1,3 @@
-
-
-// 'use client'
-
-// import React, { useState, useEffect, useCallback } from 'react'
-// import { useRouter } from 'next/navigation'
-// import Sidebar from './pages/Sidebar'
-// import CartsPage from './pages/CartsPage'
-// import OrdersPage from './pages/OrdersPage'
-// import ProfilePage from './pages/ProfilePage'
-// import { getUserByIdApi } from '@/api/users-api'
-// import { useAtom } from 'jotai'
-// import { tokenAtom, useInitializeUser, userDataAtom } from '@/utils/user'
-// import { Users } from '@/utils/type'
-
-// // ✅ User type
-// export type User = {
-//   userId: number
-//   username: string
-//   email: string
-//   password: string
-//   active: boolean
-//   roleId: number | null
-//   roleName?: string | null
-//   fullName: string | null
-//   phone: string | null
-//   street: string | null
-//   city: string | null
-//   state: string | null
-//   country: string | null
-//   postalCode: string | null
-//   isPasswordResetRequired: boolean
-//   createdAt: string
-//   updatedAt: string
-//   role?: {
-//     roleId: number
-//     roleName: string
-//     rolePermissions: {
-//       roleId: number
-//       permissionId: number
-//       permission: { id: number; name: string }
-//     }[]
-//   } | null
-// }
-
-// const UserDashboard = () => {
-//   const [activePage, setActivePage] = useState<'profile' | 'orders' | 'carts'>(
-//     'profile'
-//   )
-//   const [user, setUser] = useState<Users | null>(null)
-//   const [loading, setLoading] = useState(true)
-//   const [error, setError] = useState<string | null>(null)
-//   const [token] = useAtom(tokenAtom)
-//   useInitializeUser()
-//   const [userData] = useAtom(userDataAtom)
-//   const router = useRouter()
-
-//   const fetchUser = useCallback(async () => {
-//     if (!userData?.userId || !token) {
-//       setLoading(false)
-//       setError('No user ID or token found. Please log in.')
-//       return
-//     }
-
-//     try {
-//       setLoading(true)
-//       const response = await getUserByIdApi(token, userData.userId)
-//       if (response?.data) {
-//         setUser(response.data)
-//         setError(null)
-//       }
-//     } catch (err) {
-//       console.error('Error fetching user data:', err)
-//       setError('Failed to load user data. Please try again.')
-//     } finally {
-//       setLoading(false)
-//     }
-//   }, [token, userData?.userId])
-
-//   useEffect(() => {
-//     fetchUser()
-//   }, [fetchUser])
-
-//   const handleUserUpdate = (updatedUser: Users) => {
-//     setUser(updatedUser)
-//   }
-
-//   const renderPage = () => {
-//     if (loading) {
-//       return (
-//         <div className="flex items-center justify-center h-full">
-//           <div className="text-center">
-//             <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-//             <p className="text-gray-600">Loading user data...</p>
-//           </div>
-//         </div>
-//       )
-//     }
-
-//     if (error) {
-//       return (
-//         <div className="flex items-center justify-center h-full">
-//           <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
-//             <p className="text-red-700 text-center mb-4">{error}</p>
-//             <button
-//               onClick={fetchUser}
-//               className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-//             >
-//               Retry
-//             </button>
-//           </div>
-//         </div>
-//       )
-//     }
-
-//     switch (activePage) {
-//       case 'profile':
-//         return (
-//           <ProfilePage
-//             user={user}
-//             onUserUpdate={handleUserUpdate}
-//             onRefresh={fetchUser}
-//           />
-//         )
-//       case 'orders':
-//         return <OrdersPage />
-//       case 'carts':
-//         return <CartsPage />
-//       default:
-//         return null
-//     }
-//   }
-
-//   return (
-//     <div className="flex min-h-screen bg-gray-100">
-//       <Sidebar activePage={activePage} setActivePage={setActivePage} />
-//       <main className="flex-1 p-8 overflow-y-auto max-h-screen">
-//         <button
-//           onClick={() => router.push('/')}
-//           className="mb-6 flex items-center gap-2 text-green-600 hover:text-green-800 transition-colors font-medium"
-//         >
-//           <svg
-//             className="w-5 h-5"
-//             fill="none"
-//             stroke="currentColor"
-//             viewBox="0 0 24 24"
-//           >
-//             <path
-//               strokeLinecap="round"
-//               strokeLinejoin="round"
-//               strokeWidth={2}
-//               d="M10 19l-7-7m0 0l7-7m-7 7h18"
-//             />
-//           </svg>
-//           Back to Home
-//         </button>
-//         {renderPage()}
-//       </main>
-//     </div>
-//   )
-// }
-
-// export default UserDashboard
-
-
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
@@ -260,7 +95,9 @@ const UserDashboard = () => {
     setUser(updatedUser)
   }
 
-  const handlePageChange = (value: React.SetStateAction<'profile' | 'orders' | 'carts'>) => {
+  const handlePageChange = (
+    value: React.SetStateAction<'profile' | 'orders' | 'carts'>
+  ) => {
     setActivePage(value)
     setIsMobileMenuOpen(false)
   }
@@ -271,7 +108,9 @@ const UserDashboard = () => {
         <div className="flex items-center justify-center h-full min-h-[50vh]">
           <div className="text-center">
             <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600 text-sm sm:text-base">Loading user data...</p>
+            <p className="text-gray-600 text-sm sm:text-base">
+              Loading user data...
+            </p>
           </div>
         </div>
       )
@@ -281,7 +120,9 @@ const UserDashboard = () => {
       return (
         <div className="flex items-center justify-center h-full min-h-[50vh] px-4">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6 max-w-md w-full">
-            <p className="text-red-700 text-center mb-4 text-sm sm:text-base">{error}</p>
+            <p className="text-red-700 text-center mb-4 text-sm sm:text-base">
+              {error}
+            </p>
             <button
               onClick={fetchUser}
               className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm sm:text-base"
@@ -386,7 +227,7 @@ const UserDashboard = () => {
             <span className="hidden sm:inline">Back to Home</span>
             <span className="sm:hidden">Back</span>
           </button>
-          
+
           {/* Responsive wrapper with Tailwind classes */}
           <div className="w-full">
             <style jsx global>{`
@@ -426,9 +267,7 @@ const UserDashboard = () => {
                 }
               }
             `}</style>
-            <div className="mobile-responsive-content">
-              {renderPage()}
-            </div>
+            <div className="mobile-responsive-content">{renderPage()}</div>
           </div>
         </div>
       </main>

@@ -1,9 +1,31 @@
 import { z } from 'zod'
 
 // ✅ Request schema for registration
+// export const RegisterRequestSchema = z
+//   .object({
+//     username: z.string().min(1, "Username is required"),
+//     email: z.string().min(1, "Email is required").email("Invalid email address"),
+//     password: z.string().min(8, "Password must be at least 8 characters"),
+//     confirmPassword: z.string().min(8, "Confirm password must be at least 8 characters"),
+//     active: z.boolean().default(true),
+//     roleId: z.number().default(2),
+//   })
+//   .refine((data) => data.password === data.confirmPassword, {
+//     message: "Passwords don't match",
+//     path: ["confirmPassword"],
+//   })
+
+
+
 export const RegisterRequestSchema = z
   .object({
-    username: z.string().min(1, "Username is required"),
+    username: z.string().min(3, "Username must be at least 3 characters"),
+    fullName: z.string().min(1, "Full name is required"),
+    phone: z.string().min(1, "Phone is required"),
+    street: z.string().min(1, "Street is required"),
+    city: z.string().min(1, "City is required"),
+    state: z.string().min(1, "State is required"),
+    country: z.string().min(1, "Country is required"),
     email: z.string().min(1, "Email is required").email("Invalid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string().min(8, "Confirm password must be at least 8 characters"),
